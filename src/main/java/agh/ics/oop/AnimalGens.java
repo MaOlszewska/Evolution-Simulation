@@ -5,25 +5,30 @@ import java.util.Random;
 
 class AnimalGenes {
 
-    private int [] genes ;
-    private int genesNumber = 8;
+    private final int [] genes ;
 
     public AnimalGenes(){
         this.genes = new int[32];
         createStructureDNA();
     }
-
-    public void createStructureDNA(){
-        Random random = new Random();
-        for(int i = 0; i < genesNumber; i++ ){
-            genes[i] = random.nextInt(7);
-        }
-        Arrays.stream(genes).sorted();
+    public AnimalGenes(int[] gen){
+        this.genes = gen;
     }
 
+    public int[] getGenes(){
+        return this.genes;
+    }
+    public void createStructureDNA(){
+        Random random = new Random();
+        for(int i = 0; i < 32; i++ ){
+            genes[i] = random.nextInt(8);
+        }
+        Arrays.sort(genes);
+    }
 
     public int selectMovemnet(){
         Random random = new Random();
         return genes[random.nextInt(32)];
     }
+
 }

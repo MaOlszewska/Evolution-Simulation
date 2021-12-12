@@ -19,7 +19,7 @@ public class Simulation{
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
 
-    private void placeAnimalsFirstTime(int animalNumber){
+    private void placeAnimalsFirstTime(int animalNumber){  //place the first animals in random places on the map
         Vector2d position;
         Random random = new Random();
         int x ;
@@ -42,10 +42,12 @@ public class Simulation{
             removeDeadAnimals();
             animalsMove();
             consumptionGrass();
+            plantTuft();
+            animalReproduction();
         }
     }
 
-    private void animalsMove(){
+    private void animalsMove(){    // rotating or moving animals according to their genes
         for(Animal animal : animals){
             int movement = animal.selectMovement();
             animal.move(movement);
@@ -53,7 +55,7 @@ public class Simulation{
         }
     }
 
-    private void removeDeadAnimals() {
+    private void removeDeadAnimals() {  // remove animals if have not enough energy
         LinkedList<Animal> deadAnimals = new LinkedList<>();
         for (Animal animal : animals) {
             if (animal.getEnergy() <= 0) {
@@ -62,7 +64,8 @@ public class Simulation{
             }
         }
     }
-
+    // if there is more than one animal i one field, the strongest animal recevie all energy but if there are several animals
+    //that have the same amount of energy, taht energy is shared between them
     private void consumptionGrass(){
         for(Grass tuft : grass){
             LinkedList<Animal> hungryAnimals = map.hungryAnimalsInPosition(tuft.getPosition());
@@ -80,6 +83,25 @@ public class Simulation{
             }
             map.removeEatenGrass(tuft);
             grass.remove(tuft);
+        }
+    }
+
+    private void plantTuft(){
+        if(map.isEmptyPlaceInJungle()){  // Checking if a tuft can still be planted in Jungle
+            map.plantTuftInJungle();     // If True, plant in random place in jungle
+        }
+        if(map.isEmptyPlaceInSteppe()){  // same as above
+            map.plantTuftInSteppe();
+        }
+    }
+
+    private void animalReproduction(){
+        LinkedList<LinkedList<Animal>> pairsOfAnimal = map.findPairOfAnimal(this.parameters.getStartEnergy());
+        for(LinkedList<Animal> parents : pairsOfAnimal){
+            Animal mom = parents.peek();
+            Animal dad = parents.peek();
+            Animal child = mom.newBornAnimal(dad);
+            animals.add(child);
         }
     }
 }

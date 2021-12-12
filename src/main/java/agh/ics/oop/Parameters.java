@@ -3,10 +3,10 @@ package agh.ics.oop;
 public class Parameters {
     private int width;
     private int height;
-    private int jungleSize;
+    private float jungleSize;
     private int caloriesGrass;
     private int numberOfAnimals;
-    private int energy;
+    private int startEnergy;
 
     public int getWidth() {
         return width;
@@ -15,12 +15,13 @@ public class Parameters {
     public int getHeight() {
         return height;
     }
-    public int getJungleSize() {
+
+    public float getJungleSize() {
         return jungleSize;
     }
 
     public int getStartEnergy() {
-        return energy;
+        return startEnergy;
     }
 
     public int getCaloriesGrass() {
