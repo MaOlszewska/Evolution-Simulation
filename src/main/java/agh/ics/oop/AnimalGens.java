@@ -11,6 +11,7 @@ class AnimalGenes {
         this.genes = new int[32];
         createStructureDNA();
     }
+
     public AnimalGenes(int[] gen){
         this.genes = gen;
     }
@@ -18,6 +19,7 @@ class AnimalGenes {
     public int[] getGenes(){
         return this.genes;
     }
+
     public void createStructureDNA(){
         Random random = new Random();
         for(int i = 0; i < 32; i++ ){

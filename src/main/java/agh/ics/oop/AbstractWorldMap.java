@@ -3,17 +3,12 @@ package agh.ics.oop;
 import java.util.*;
 
 public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObserver {
-    protected LinkedHashMap<Vector2d, PriorityQueue<Animal> > animals = new LinkedHashMap<>();
-    protected LinkedHashMap<Vector2d, Grass> grass = new LinkedHashMap<>();
-
 
     public abstract boolean canMoveTo(Vector2d position);
 
+    public abstract Object objectAt(Vector2d position);
 
-    @Override
-    public Object objectAt(Vector2d position) {
-        return animals.get(position);  // jesli nie ma żadneog zwierzecia zwraca null
-    }
+    public abstract void addPriotityAnimal(Animal animal, Vector2d position);
 
     public Vector2d jungleLowerLeft(int height, int width, float jungleRatio){
         int jungleSize = (int) (width * jungleRatio);
@@ -29,64 +24,42 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return new Vector2d(jungleX + jungleSize,jungleY + jungleSize );
     }
 
-    public boolean isOccupied(Vector2d position) {
-        return objectAt(position) != null;
-    }
+    public abstract boolean isOccupied(Vector2d position);
 
 
-    public void removeDeadAnimal(Animal animal){   // DO POPRAWY
-        animals.remove(animals.get(animal.getPosition()));
-        animal.removeObserver(this);
-    }
+    public abstract void removeEatenGrass(Grass tuft);
 
-    public void removeEatenGrass(Grass tuft){
-        grass.remove(tuft.getPosition());
-    }
+    public abstract LinkedList<Animal> hungryAnimalsInPosition(Vector2d position);
 
-    public LinkedList<Animal> hungryAnimalsInPosition(Vector2d position) {
-        PriorityQueue<Animal> allHungryAnimals = animals.get(position);
-        LinkedList<Animal> animalsToFeed = new LinkedList<>();
-        if (allHungryAnimals == null && allHungryAnimals.size() == 0) {
-            return null;
-        } else {
-            Animal animalToCheck = allHungryAnimals.poll(); // zwierze z najwieksza iloscią energii
-            animalsToFeed.add(animalToCheck);
-            Animal nextAnimalToCheck = allHungryAnimals.poll();
-            while (nextAnimalToCheck.getEnergy() == animalToCheck.getEnergy() && allHungryAnimals.size() >= 1) {
-                animalsToFeed.add(nextAnimalToCheck);
-                nextAnimalToCheck = allHungryAnimals.poll();
-            }
+    public abstract boolean isEmptyJungle();
+    public abstract Vector2d plantTuftInJungle();
+    public abstract boolean isEmptySteppe();
+    public abstract Vector2d plantTuftInSteppe();
 
-        }
-        return animalsToFeed;
-    }
-
-    public abstract boolean isEmptyPlaceInJungle();
-    public abstract void plantTuftInJungle();
-    public abstract boolean isEmptyPlaceInSteppe();
-    public abstract void plantTuftInSteppe();
-
-    public LinkedList<LinkedList<Animal>> findPairOfAnimal(int startEnergy){
-        LinkedList<LinkedList<Animal>> healtyAnimalsPairs = new LinkedList<>();
-
-        for(Vector2d position : animals.keySet()){
-            PriorityQueue<Animal> allAnimalsOnPosition = animals.get(position);
-            LinkedList<Animal> parentAnimal = new LinkedList<>();
-            if(allAnimalsOnPosition.size() >= 2){
-                Animal firstAnimal = allAnimalsOnPosition.poll();
-                Animal secondAnimal = allAnimalsOnPosition.poll();
-                // połowa energi początkowej zwierzęcia a nie danego osobnika
-                if(firstAnimal.getEnergy() > (startEnergy / 2) && secondAnimal.getEnergy() > (startEnergy / 2)){
-                    parentAnimal.add(firstAnimal);
-                    parentAnimal.add(secondAnimal);
-                }
-                healtyAnimalsPairs.add(parentAnimal);
-            }
-        }
-        return healtyAnimalsPairs;
-    }
+//    public LinkedList<LinkedList<Animal>> findPairOfAnimal(int startEnergy){
+//
+//        LinkedList<LinkedList<Animal>> healtyAnimalsPairs = new LinkedList<>();
+//
+//        for(Vector2d position : animals.keySet()){
+//            PriorityQueue<Animal> allAnimalsOnPosition = animals.get(position);
+//            LinkedList<Animal> parentAnimal = new LinkedList<>();
+//            if(allAnimalsOnPosition.size() >= 2){
+//                Animal firstAnimal = allAnimalsOnPosition.poll();
+//                Animal secondAnimal = allAnimalsOnPosition.poll();
+//                // połowa energi początkowej zwierzęcia a nie danego osobnika
+//                if(firstAnimal.getEnergy() > (startEnergy / 2) && secondAnimal.getEnergy() > (startEnergy / 2)){
+//                    parentAnimal.add(firstAnimal);
+//                    parentAnimal.add(secondAnimal);
+//                }
+//                healtyAnimalsPairs.add(parentAnimal);
+//            }
+//        }
+//        return healtyAnimalsPairs;
+//    }
 
 
+    public abstract void removeDeadAnimal(Animal animal);
+    public abstract void removeAnimalFromPosition(Animal animal, Vector2d oldPosition);
 }
 
 

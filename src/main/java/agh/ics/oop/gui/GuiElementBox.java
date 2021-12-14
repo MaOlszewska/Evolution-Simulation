@@ -22,9 +22,7 @@ public class GuiElementBox{
 
         Label label;
         if(object instanceof Animal){ label = new Label(object.getPosition().toString());}
-        else{label = new Label("Trawa");}
         this.vBox.getChildren().add(imageView);
-        this.vBox.getChildren().add(label);
         vBox.setAlignment(Pos.CENTER);
     }
 

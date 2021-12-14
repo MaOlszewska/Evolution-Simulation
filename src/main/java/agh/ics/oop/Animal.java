@@ -3,25 +3,31 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Animal implements IMapElement, IPositionChangeObserver {
+public class Animal implements IMapElement{
     private Vector2d position;
     private MapDirection orientation;
     private final IWorldMap map;
-    private final ArrayList<IPositionChangeObserver> observers;
     private int energy;
     private final AnimalGenes genes;
-
+    private int numberOfChildren;
+    private int numberOfDays;
+    private ArrayList<IPositionChangeObserver> observers;
 
 
     public Animal(Vector2d initialPosition, int initialEnergy, IWorldMap map, AnimalGenes genes){
         this.orientation = MapDirection.randomOrientation();
         this.position = initialPosition;
-        this.observers = new ArrayList<>();
         this.energy = initialEnergy;
         this.map = map;
         this.genes = genes;
+        this.numberOfChildren = 0;
+        this.numberOfDays = 0;
+        this.observers = new ArrayList<>();
     }
-
+    public void addOneDay(){this.numberOfDays += 1;}
+    public int getNumberOfDays(){return numberOfDays;}
+    public void addChild(){this.numberOfChildren += 1;}
+    public int getNumberOfChildren(){return numberOfChildren;}
     @Override
     public Vector2d getPosition() {
         return this.position;
@@ -41,7 +47,6 @@ public class Animal implements IMapElement, IPositionChangeObserver {
         this.energy += i;
     }
 
-
     public void addObserver(IPositionChangeObserver observer){
         this.observers.add(observer);
     }
@@ -50,13 +55,10 @@ public class Animal implements IMapElement, IPositionChangeObserver {
         this.observers.remove(observer);
     }
 
-    @Override
-    public void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-        observers.forEach(observer -> observer.positionChanged(oldPosition,newPosition));
-    }
 
     public void move(int movement){
         Vector2d newPosition;
+
         switch (movement) {
             case 0 :
                 newPosition = this.position.add(this.orientation.toUnitVector());
@@ -65,16 +67,6 @@ public class Animal implements IMapElement, IPositionChangeObserver {
                     this.position = newPosition;
                     positionChanged(oldPosition,newPosition);
                 }
-
-            case 1 :
-                this.orientation = this.orientation.next();
-                break;
-            case 2:
-                this.orientation = this.orientation.next().next();
-                break;
-            case 3 :
-                this.orientation = this.orientation.next().next().next();
-                break;
             case 4:
                 newPosition = this.position.subtract(this.orientation.toUnitVector());
                 if(this.map.canMoveTo(newPosition)){
@@ -82,19 +74,18 @@ public class Animal implements IMapElement, IPositionChangeObserver {
                     this.position = newPosition;
                     positionChanged(oldPosition,newPosition);
                 }
-
                 break;
-            case 5:
-                this.orientation = this.orientation.next().next().next().next();
-                break;
-            case 6:
-                this.orientation = this.orientation.next().next().next().next().next();
-                break;
-            case 7:
-                this.orientation = this.orientation.next().next().next().next().next().next();
-                break;
-            default: ;
-
+            default: rotate(movement);
+        }
+    }
+    private void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
+        for (IPositionChangeObserver observer : this.observers){
+            observer.positionChanged(this, oldPosition, newPosition);
+        }
+    }
+    private void rotate(int movement){
+        for(int i = 1; i <= movement; i++ ){
+            if(i != 4){this.orientation = this.orientation.next();}
         }
     }
 
@@ -120,7 +111,6 @@ public class Animal implements IMapElement, IPositionChangeObserver {
         Vector2d newBornPosition = this.getPosition();
         AnimalGenes newBornGenes = createNewBornGenes(dad);
         return new Animal( newBornPosition,newBornEnergy, map, newBornGenes);
-
     }
 
     private AnimalGenes createNewBornGenes(Animal dad) {
