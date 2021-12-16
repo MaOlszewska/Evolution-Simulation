@@ -45,7 +45,6 @@ public interface IWorldMap {
      *            The position of the object.
      * @return Object or null if the position is not occupied.
      */
-    //Object objectAtAnimal(Vector2d position);
-
+    Object objectAt(Vector2d position);
 
 }

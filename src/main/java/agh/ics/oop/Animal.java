@@ -12,6 +12,7 @@ public class Animal implements IMapElement{
     private int numberOfChildren;
     private int numberOfDays;
     private ArrayList<IPositionChangeObserver> observers;
+    private ArrayList<IEnergyChangeObserver> energyObservers;
 
 
     public Animal(Vector2d initialPosition, int initialEnergy, IWorldMap map, AnimalGenes genes){
@@ -23,6 +24,7 @@ public class Animal implements IMapElement{
         this.numberOfChildren = 0;
         this.numberOfDays = 0;
         this.observers = new ArrayList<>();
+        this.energyObservers = new ArrayList<>();
     }
     public void addOneDay(){this.numberOfDays += 1;}
     public int getNumberOfDays(){return numberOfDays;}
@@ -55,9 +57,18 @@ public class Animal implements IMapElement{
         this.observers.remove(observer);
     }
 
+//    public void addEnergyObserver(IEnergyChangeObserver observer){
+//        this.energyObservers.add(observer);
+//    }
+//
+//    public void removeEnergyObserver (IEnergyChangeObserver observer){
+//        this.energyObservers.remove(observer);
+//    }
 
-    public void move(int movement){
+
+    public void move(int movement, int energy){
         Vector2d newPosition;
+        //System.out.println(this.getEnergy());
 
         switch (movement) {
             case 0 :
@@ -76,17 +87,18 @@ public class Animal implements IMapElement{
                 }
                 break;
             default: rotate(movement);
+
         }
     }
+
+//    private void energyChanged(){
+//        for(IEnergyChangeObserver observer : this.energyObservers){observer.energyChanged(this);}
+//    }
     private void positionChanged(Vector2d oldPosition, Vector2d newPosition) {
-        for (IPositionChangeObserver observer : this.observers){
-            observer.positionChanged(this, oldPosition, newPosition);
-        }
+        for (IPositionChangeObserver observer : this.observers){observer.positionChanged(this, oldPosition, newPosition);}
     }
     private void rotate(int movement){
-        for(int i = 1; i <= movement; i++ ){
-            if(i != 4){this.orientation = this.orientation.next();}
-        }
+        for(int i = 1; i <= movement; i++ ){if(i != 4){this.orientation = this.orientation.next();}}
     }
 
     @Override
@@ -102,55 +114,52 @@ public class Animal implements IMapElement{
         }
     }
 
-    public int selectMovement(){
-        return genes.selectMovemnet();
-    }
+    public int selectMovement(){return genes.selectMovemnet();}
 
     public Animal newBornAnimal( Animal dad){
         int newBornEnergy = this.getEnergy()/4 + dad.getEnergy()/4;
         Vector2d newBornPosition = this.getPosition();
         AnimalGenes newBornGenes = createNewBornGenes(dad);
+        this.substractEnergy(this.getEnergy()/4);
+        dad.substractEnergy(dad.getEnergy()/4);
         return new Animal( newBornPosition,newBornEnergy, map, newBornGenes);
     }
 
-    private AnimalGenes createNewBornGenes(Animal dad) {
+    public AnimalGenes createNewBornGenes(Animal secondParent) {
         int[] newBornGenes = new int[32];
-        int momEnergy = this.getEnergy();
-        int dadEnergy = dad.getEnergy();
-        int[] momGenes = this.genes.getGenes();
-        int[] dadGenes = dad.genes.getGenes();
-        System.out.println(momEnergy);
-        System.out.println(dadEnergy);
+        int fisrtAnimalEnergy = this.getEnergy();
+        int secondAnimalEnergy = secondParent.getEnergy();
+        int[] firstAnimalGenes = this.genes.getGenes();
+        int[] secondAnimalGenes = secondParent.genes.getGenes();
+        int div = (int) ((((float)(fisrtAnimalEnergy)/(fisrtAnimalEnergy + secondAnimalEnergy))) * 32 - 1);
 
-        if(momEnergy >= dadEnergy){ // dziecko dostaje wiecej genów mamy
+        if(fisrtAnimalEnergy >= secondAnimalEnergy){ // dziecko dostaje wiecej genów mamy
             Random random = new Random();// true-lewa false-prawa
-            int div = (int) ((((float)(momEnergy)/(momEnergy + dadEnergy))) * 32 - 1);
-            if(random.nextBoolean()){ // wylosowano stronę lewa
-                for(int i = 0  ; i <= div; i++){newBornGenes[i] = momGenes[i];}
-                for(int i = div + 1; i < 32; i++){newBornGenes[i] = dadGenes[i];}
-            }
-            //WYlosowano stronę prawą
-            else{
-                for(int i = 32 - div - 1; i < 32; i++){newBornGenes[i] = momGenes[i];}
-                for(int i = 0; i < 32 - div -1; i++){newBornGenes[i] = dadGenes[i];}
-            }
+            if(random.nextBoolean()){newBornGenes = leftSide(div, secondAnimalGenes, firstAnimalGenes);}
+            else{newBornGenes = rightSide(div, secondAnimalGenes, firstAnimalGenes);}//WYlosowano stronę prawą
         }
         else{
             Random random = new Random();// true-lewa false-prawa
-            int div = (int) ((((float)(momEnergy)/(momEnergy + dadEnergy))) * 32 - 1);
-            if(random.nextBoolean()){ // wylosowano stronę lewa
-                for(int i = 0  ; i <= div; i++){newBornGenes[i] = dadGenes[i];}
-                for(int i = div + 1; i < 32; i++){newBornGenes[i] = momGenes[i];}
-            }
-            //WYlosowano stronę prawą
-            else{
-                for(int i = 32 - div - 1; i < 32; i++){newBornGenes[i] = dadGenes[i];}
-                for(int i = 0; i < 32 - div - 1; i++){newBornGenes[i] = momGenes[i];}
-            }
+            if(random.nextBoolean()){newBornGenes = leftSide(div, secondAnimalGenes, firstAnimalGenes);}
+            else{newBornGenes = rightSide(div, secondAnimalGenes, firstAnimalGenes);}//WYlosowano stronę prawą
         }
-        this.substractEnergy(this.getEnergy()/4);
-        dad.substractEnergy(dad.getEnergy()/4);
         Arrays.sort(newBornGenes);
+        for(int i = 0; i< 32; i++){
+            System.out.print(newBornGenes[i]);
+        }
         return new AnimalGenes(newBornGenes);
+    }
+
+    private int[] rightSide(int div, int[] firstAnimalGenes, int[] secondAnimalGenes ){
+        int[] newBornGenes = new int[32];
+        for(int i = 32 - div - 1; i < 32; i++){newBornGenes[i] = secondAnimalGenes[i];}
+        for(int i = 0; i < 32 - div - 1; i++){newBornGenes[i] = firstAnimalGenes[i];}
+        return newBornGenes;
+    }
+    private int[] leftSide(int div, int[] firstAnimalGenes, int[] secondAnimalGenes){
+        int[] newBornGenes = new int[32];
+        for(int i = 0  ; i <= div; i++){newBornGenes[i] = secondAnimalGenes[i];}
+        for(int i = div + 1; i < 32; i++){newBornGenes[i] = firstAnimalGenes[i];}
+        return newBornGenes;
     }
 }

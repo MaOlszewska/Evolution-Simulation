@@ -2,8 +2,6 @@ package agh.ics.oop;
 
 
 import agh.ics.oop.gui.App;
-
-import javax.swing.*;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -18,7 +16,7 @@ public class Simulation implements Runnable{
     private App app;
 
     public Simulation(Parameters parameters, App applic){
-        this.map = new RightMap(parameters.getHeight(),parameters.getHeight(),parameters.getJungleSize(), parameters.getCaloriesGrass());
+        this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleSize(), parameters.getCaloriesGrass());
         this.parameters = parameters;
         this.animals = new ArrayList<>();
         this.grass = new ArrayList<>();
@@ -29,7 +27,8 @@ public class Simulation implements Runnable{
     }
 
     public ArrayList<Animal> getAnimals(){return this.animals;}
-
+    public IWorldMap getMap(){return this.map;}
+    public Parameters getParameters(){return this.parameters;}
     public ArrayList<Grass> getGrass() {return this.grass;}
 
     private void placeAnimalsFirstTime(int animalNumber){  //place the first animals in random places on the map
@@ -51,17 +50,6 @@ public class Simulation implements Runnable{
         }
     }
 
-//    public void anotherDay() {
-//        while (animals.size() > 0) {
-//            removeDeadAnimals();
-//            animalsMove();
-//            plantTuft();
-//            consumptionGrass();
-//            //animalReproduction();
-//            statistics.addOneDay();
-//            app.drawMap();
-//        }
-//    }
 
     public void run(){
         while (animals.size() > 0) {
@@ -69,9 +57,9 @@ public class Simulation implements Runnable{
                 Thread.sleep(400);
                 removeDeadAnimals();
                 animalsMove();
-                plantTuft();
                 consumptionGrass();
-                //animalReproduction();
+                animalReproduction();
+                plantTuft();
                 statistics.addOneDay();
                 app.drawMap();
             } catch (InterruptedException ex) {
@@ -82,13 +70,13 @@ public class Simulation implements Runnable{
 
     private void plantTuft(){
         if(map.isEmptyJungle()){
-            Vector2d tuft = map.plantTuftInJungle();
-            grass.add(new Grass(tuft));
+            Grass tuft = map.plantTuftInJungle();
+            grass.add(tuft);
             statistics.addOneGrass();
         }
         if(map.isEmptySteppe()){
-            Vector2d tuft = map.plantTuftInSteppe();
-            grass.add(new Grass(tuft));
+            Grass tuft = map.plantTuftInSteppe();
+            grass.add(tuft);
             statistics.addOneGrass();
         }
 
@@ -97,7 +85,7 @@ public class Simulation implements Runnable{
         int allEnergy = 0;
         for(Animal animal : animals){
             int movement = animal.selectMovement();
-            animal.move(movement);
+            animal.move(movement, energyToMove);
             animal.substractEnergy(energyToMove);
             allEnergy += animal.getEnergy();
             animal.addOneDay();
@@ -127,7 +115,6 @@ public class Simulation implements Runnable{
         for (Grass tuft : grass) {
             LinkedList<Animal> animalsOnPosition = map.hungryAnimalsInPosition(tuft.getPosition());
             if (animalsOnPosition != null) {
-
                 for (Animal animal : animalsOnPosition) {
                     int calories = parameters.getCaloriesGrass();
                     animal.addEnergy(calories / animalsOnPosition.size());
@@ -141,21 +128,17 @@ public class Simulation implements Runnable{
             map.removeEatenGrass(tuft);
             statistics.substractOneGrass();
         }
-        System.out.println(statistics.getNumberOfGrass());
     }
 
-//    private void animalReproduction(){
-//        LinkedList<LinkedList<Animal>> pairsOfAnimal = map.findPairOfAnimal(this.parameters.getStartEnergy());
-//        for(LinkedList<Animal> parents : pairsOfAnimal){
-//            Animal mom = parents.peek();
-//            Animal dad = parents.peek();
-//            Animal child = mom.newBornAnimal(dad);
-//            animals.add(child);
-//            map.addPriotityAnimal(child, child.getPosition());
-//            statistics.addOneLiveAnimal();
-//            dad.addChild();
-//            mom.addChild();
-//        }
-//    }
 
+    private void animalReproduction(){
+        LinkedList<LinkedList<Animal>> allPairToREproduce = map.findPair(energyToMove*(0.5f));
+        for (LinkedList<Animal> parents : allPairToREproduce){
+            Animal child = parents.poll().newBornAnimal(parents.poll());
+            animals.add(child);
+            map.place(child);
+            statistics.addOneLiveAnimal();
+        }
+        System.out.println(statistics.getNumberOfAliveAnimals());
+    }
 }
