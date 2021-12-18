@@ -3,49 +3,32 @@ package agh.ics.oop;
 import java.lang.reflect.Array;
 import java.util.*;
 
-public class RightMap extends AbstractWorldMap implements IPositionChangeObserver{  // mapa z murem
+public class Map extends AbstractWorldMap implements IPositionChangeObserver{  // mapa z murem
     private Vector2d lowerLeft;
     private Vector2d upperRight;
     private Vector2d lowerLeftJungle;
     private Vector2d upperRightJungle;
     private int caloriesGrass;
-//    private final LinkedHashMap<Vector2d, PriorityQueue<Animal>> animals;
-//    private final LinkedHashMap<Vector2d, Grass> grass;
 
 
-    public RightMap(int width, int height, float jungleRatio, int caloriesGrass) {
+    public Map(int width, int height, float jungleRatio, int caloriesGrass) {
         this.lowerLeft = new Vector2d(0, 0);
         this.upperRight = new Vector2d(width -1 , height- 1);
         this.lowerLeftJungle = jungleLowerLeft(width, height, jungleRatio);
         this.upperRightJungle = jungleUpperRight(width, height, jungleRatio);
         this.caloriesGrass = caloriesGrass;
-//        this.animals = new LinkedHashMap<>();
-//        this.grass = new LinkedHashMap<>();
     }
 
-//    public boolean isOccupied(Vector2d position) {
-//        return !(objectAt(position) == null) ;
-//    }
     public Vector2d getLowerLeft(){return lowerLeft;}
     public Vector2d getLowerLeftJungle(){return lowerLeftJungle;}
     public Vector2d getUpperRight(){return upperRight;}
     public Vector2d getUpperRightJungle(){return upperRightJungle;}
+
     @Override
     public boolean canMoveTo(Vector2d position) {
         return position.precedes(upperRight) && position.follows(lowerLeft);
     }
 
-//    @Override
-//    public Object objectAt(Vector2d position) {
-//        if(grass.get(position) == null){
-//            PriorityQueue <Animal> animalsOnPos = animals.get(position);
-//            if(animalsOnPos == null || animalsOnPos.size() == 0) return null;
-//            else return animalsOnPos.peek();
-//        }
-//        else {
-//            return grass.get(position);
-//        }
-//    }
 
     @Override
     public LinkedList<Animal> hungryAnimalsInPosition(Vector2d position) {

@@ -25,7 +25,5 @@ public class GuiElementBox{
         this.vBox.getChildren().add(imageView);
         vBox.setAlignment(Pos.CENTER);
     }
-
     public VBox getvBox()  {return vBox;}
-
 }

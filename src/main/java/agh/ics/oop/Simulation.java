@@ -1,6 +1,5 @@
 package agh.ics.oop;
 
-
 import agh.ics.oop.gui.App;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -8,15 +7,15 @@ import java.util.Random;
 
 public class Simulation implements Runnable{
     private final AbstractWorldMap map;
-    private final Parameters parameters;
+    private final GetParameters parameters;
     private ArrayList<Animal> animals;
     private ArrayList<Grass> grass;
     private Statistics statistics;
     private int energyToMove;
     private App app;
 
-    public Simulation(Parameters parameters, App applic){
-        this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleSize(), parameters.getCaloriesGrass());
+    public Simulation(GetParameters parameters, App applic){
+        this.map = new Map(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass());
         this.parameters = parameters;
         this.animals = new ArrayList<>();
         this.grass = new ArrayList<>();
@@ -28,10 +27,9 @@ public class Simulation implements Runnable{
 
     public ArrayList<Animal> getAnimals(){return this.animals;}
     public IWorldMap getMap(){return this.map;}
-    public Parameters getParameters(){return this.parameters;}
+    public GetParameters getParameters(){return this.parameters;}
     public ArrayList<Grass> getGrass() {return this.grass;}
     public Statistics getStatistics(){return this.statistics;}
-
 
     private void placeAnimalsFirstTime(int animalNumber){  //place the first animals in random places on the map
         Vector2d position;
@@ -52,7 +50,6 @@ public class Simulation implements Runnable{
         }
     }
 
-
     public void day(){
         removeDeadAnimals();
         animalsMove();
@@ -60,6 +57,7 @@ public class Simulation implements Runnable{
         animalReproduction();
         plantTuft();
         app.showMap();
+        statistics.addOneDay();
     }
 
     public void run(){
@@ -67,7 +65,6 @@ public class Simulation implements Runnable{
             try {
                 day();
                 Thread.sleep(400);
-                statistics.addOneDay();
             } catch (InterruptedException ex) {
                 System.out.println(ex.toString());
             }
@@ -85,8 +82,8 @@ public class Simulation implements Runnable{
             grass.add(tuft);
             statistics.addOneGrass();
         }
-
     }
+
     private void removeDeadAnimals() {  // remove animals if have not enough energy
         int sumDays = 0;
         ArrayList<Animal> animalToRemove = new ArrayList<>();
@@ -105,7 +102,8 @@ public class Simulation implements Runnable{
         statistics.addDaysDeadAnimal(sumDays);
         statistics.counterOfAvgLifeDaysDeadAnimals();
     }
-    private void animalsMove(){// rotating or moving animals according to their genes
+
+    private void animalsMove(){ // rotating or moving animals according to their genes
         int sumEnergy = 0;
         for(Animal animal : animals){
             animal.addOneDay();
@@ -138,7 +136,6 @@ public class Simulation implements Runnable{
             statistics.substractOneGrass();
         }
     }
-
 
     private void animalReproduction(){
         LinkedList<LinkedList<Animal>> allPairToREproduce = map.findPair(energyToMove * (0.5f));

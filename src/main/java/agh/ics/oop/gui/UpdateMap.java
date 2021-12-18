@@ -7,15 +7,14 @@ import javafx.scene.control.Label;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-
 import java.util.ArrayList;
 
-public class drawMap {
+public class UpdateMap {
     private Simulation engine;
     private GridPane gridPane;
     private VBox stats;
 
-    public drawMap(Simulation engine){
+    public UpdateMap(Simulation engine){
         this.engine = engine;
         this.gridPane = new GridPane();
         this.stats = showStatistic();
@@ -25,13 +24,13 @@ public class drawMap {
         for (int i = 0; i < engine.getParameters().getHeight(); i++){
             this.gridPane.getRowConstraints().add(new RowConstraints(20));
         }
-        drawMap();
+        createMap();
     }
 
     public GridPane getGridPane(){ return this.gridPane;}
     public VBox getStats(){return this.stats;}
 
-    private void drawMap(){
+    private void createMap(){
         gridPane.getChildren().clear();
         gridPane.setGridLinesVisible(true);
         coloringMap();
@@ -83,7 +82,7 @@ public class drawMap {
             for (int j = 0; j <= upperRight.y; j++) {
                 Vector2d pos = new Vector2d(i, j);
                 StackPane till = new StackPane();
-                if (pos.follows(lowerLeftJungle) && pos.precedes(upperRightJungle)) {
+                if(pos.follows(lowerLeftJungle) && pos.precedes(upperRightJungle)) {
                     till.setBackground(new Background(new BackgroundFill(Color.DARKGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
                     gridPane.add(till, i, j);
                 } else {
