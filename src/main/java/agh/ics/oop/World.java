@@ -16,7 +16,8 @@ public class World {
 //        for(int i = 0; i< 32; i++){
 //            System.out.print(genes1[i]);
 //        }
-//        System.out.println("\n");
+//
+//        System.out.println("\n" + " " + animal.findDominantGenotype());
 //        for(int i = 0; i< 32; i++){
 //            System.out.print(genes2[i]);
 //        }

@@ -12,7 +12,7 @@ public class Animal implements IMapElement{
     private int numberOfChildren;
     private int numberOfDays;
     private ArrayList<IPositionChangeObserver> observers;
-    private ArrayList<IEnergyChangeObserver> energyObservers;
+
 
 
     public Animal(Vector2d initialPosition, int initialEnergy, IWorldMap map, AnimalGenes genes){
@@ -24,7 +24,6 @@ public class Animal implements IMapElement{
         this.numberOfChildren = 0;
         this.numberOfDays = 0;
         this.observers = new ArrayList<>();
-        this.energyObservers = new ArrayList<>();
     }
     public void addOneDay(){this.numberOfDays += 1;}
     public int getNumberOfDays(){return numberOfDays;}
@@ -65,7 +64,20 @@ public class Animal implements IMapElement{
 //        this.energyObservers.remove(observer);
 //    }
 
-
+    public int findDominantGenotype(){
+        int[] counter = new int[8];
+        int[] gen = this.getGenes().getGenes();
+        for(int i = 0; i< 32; i++){counter[gen[i]] += 1;}
+        int dominantGenotype = 0;
+        int maxGenotype =0;
+        for(int i = 0; i < 8; i++ ){
+            if(counter[i] > maxGenotype){
+                maxGenotype = counter[i];
+                dominantGenotype = i;
+            }
+        }
+        return dominantGenotype;
+    }
     public void move(int movement, int energy){
         Vector2d newPosition;
         //System.out.println(this.getEnergy());
@@ -122,6 +134,8 @@ public class Animal implements IMapElement{
         AnimalGenes newBornGenes = createNewBornGenes(dad);
         this.substractEnergy(this.getEnergy()/4);
         dad.substractEnergy(dad.getEnergy()/4);
+        dad.addChild();
+        this.addChild();
         return new Animal( newBornPosition,newBornEnergy, map, newBornGenes);
     }
 
@@ -144,9 +158,6 @@ public class Animal implements IMapElement{
             else{newBornGenes = rightSide(div, secondAnimalGenes, firstAnimalGenes);}//WYlosowano stronę prawą
         }
         Arrays.sort(newBornGenes);
-        for(int i = 0; i< 32; i++){
-            System.out.print(newBornGenes[i]);
-        }
         return new AnimalGenes(newBornGenes);
     }
 

@@ -2,10 +2,10 @@ package agh.ics.oop;
 
 public class Parameters {
     private int width = 10;
-    private int height = 20;
+    private int height = 10;
     private float jungleSize = 0.5f;
     private int caloriesGrass = 30;
-    private int numberOfAnimals = 30;
+    private int numberOfAnimals = 40;
     private int startEnergy = 100;
     private int energyToMove = 5;
 

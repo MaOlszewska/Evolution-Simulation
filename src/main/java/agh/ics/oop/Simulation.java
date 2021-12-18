@@ -30,6 +30,8 @@ public class Simulation implements Runnable{
     public IWorldMap getMap(){return this.map;}
     public Parameters getParameters(){return this.parameters;}
     public ArrayList<Grass> getGrass() {return this.grass;}
+    public Statistics getStatistics(){return this.statistics;}
+
 
     private void placeAnimalsFirstTime(int animalNumber){  //place the first animals in random places on the map
         Vector2d position;
@@ -51,17 +53,21 @@ public class Simulation implements Runnable{
     }
 
 
+    public void day(){
+        removeDeadAnimals();
+        animalsMove();
+        consumptionGrass();
+        animalReproduction();
+        plantTuft();
+        app.showMap();
+    }
+
     public void run(){
         while (animals.size() > 0) {
             try {
+                day();
                 Thread.sleep(400);
-                removeDeadAnimals();
-                animalsMove();
-                consumptionGrass();
-                animalReproduction();
-                plantTuft();
                 statistics.addOneDay();
-                app.drawMap();
             } catch (InterruptedException ex) {
                 System.out.println(ex.toString());
             }
@@ -81,30 +87,34 @@ public class Simulation implements Runnable{
         }
 
     }
-    private void animalsMove(){    // rotating or moving animals according to their genes
-        int allEnergy = 0;
-        for(Animal animal : animals){
-            int movement = animal.selectMovement();
-            animal.move(movement, energyToMove);
-            animal.substractEnergy(energyToMove);
-            allEnergy += animal.getEnergy();
-            animal.addOneDay();
-        }
-        //statistics.CounterOfAvgEnergy(allEnergy);
-    }
     private void removeDeadAnimals() {  // remove animals if have not enough energy
+        int sumDays = 0;
         ArrayList<Animal> animalToRemove = new ArrayList<>();
         for (Animal animal : animals) {
             if (animal.getEnergy() <= 0) {
+                sumDays += animal.getNumberOfDays();
                 animalToRemove.add(animal);
-                statistics.addOneDeadAnimal();
-                statistics.addDaysDeadAnimal(animal.getNumberOfDays());
             }
         }
         for (Animal animal : animalToRemove) {
+            statistics.addOneDeadAnimal();
             animals.remove(animal);
             map.removeDeadAnimal(animal);
         }
+        statistics.counterAvgChildrenOfAliveAnimals(animals);
+        statistics.addDaysDeadAnimal(sumDays);
+        statistics.counterOfAvgLifeDaysDeadAnimals();
+    }
+    private void animalsMove(){// rotating or moving animals according to their genes
+        int sumEnergy = 0;
+        for(Animal animal : animals){
+            animal.addOneDay();
+            int movement = animal.selectMovement();
+            animal.move(movement, energyToMove);
+            animal.substractEnergy(energyToMove);
+            sumEnergy += animal.getEnergy();
+        }
+        statistics.counterOfAvgEnergy(sumEnergy);
     }
 
     // if there is more than one animal i one field, the strongest animal recevie all energy but if there are several animals
@@ -112,17 +122,16 @@ public class Simulation implements Runnable{
 
     private void consumptionGrass() {
         LinkedList<Grass> grassToRemove = new LinkedList<>();
+        int calories = parameters.getCaloriesGrass();
         for (Grass tuft : grass) {
             LinkedList<Animal> animalsOnPosition = map.hungryAnimalsInPosition(tuft.getPosition());
             if (animalsOnPosition != null) {
                 for (Animal animal : animalsOnPosition) {
-                    int calories = parameters.getCaloriesGrass();
                     animal.addEnergy(calories / animalsOnPosition.size());
                 }
                 grassToRemove.add(tuft);
             }
         }
-
         for (Grass tuft : grassToRemove) {
             grass.remove(tuft);
             map.removeEatenGrass(tuft);
@@ -132,13 +141,13 @@ public class Simulation implements Runnable{
 
 
     private void animalReproduction(){
-        LinkedList<LinkedList<Animal>> allPairToREproduce = map.findPair(energyToMove*(0.5f));
+        LinkedList<LinkedList<Animal>> allPairToREproduce = map.findPair(energyToMove * (0.5f));
         for (LinkedList<Animal> parents : allPairToREproduce){
             Animal child = parents.poll().newBornAnimal(parents.poll());
             animals.add(child);
             map.place(child);
             statistics.addOneLiveAnimal();
         }
-        System.out.println(statistics.getNumberOfAliveAnimals());
+        statistics.findDominantGenotype(animals);
     }
 }

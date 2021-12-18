@@ -3,7 +3,7 @@ package agh.ics.oop;
 import java.lang.reflect.Array;
 import java.util.*;
 
-public class RightMap extends AbstractWorldMap implements IPositionChangeObserver, IEnergyChangeObserver{  // mapa z murem
+public class RightMap extends AbstractWorldMap implements IPositionChangeObserver{  // mapa z murem
     private Vector2d lowerLeft;
     private Vector2d upperRight;
     private Vector2d lowerLeftJungle;
@@ -148,10 +148,5 @@ public class RightMap extends AbstractWorldMap implements IPositionChangeObserve
         return grasses;
     }
 
-    @Override
-    public void energyChanged(Animal animal) {
-        removeAnimalFromPosition(animal,animal.getPosition());
-        addAnimalAtPosition(animal, animal.getPosition());
-    }
 }
 
