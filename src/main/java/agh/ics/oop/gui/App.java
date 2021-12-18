@@ -57,9 +57,11 @@ public class App extends Application {
         n.setMaxWidth(120);
         s.setMaxWidth(120);
         e.setMaxWidth(120);
+        w.setStyle("-fx-control-inner-background: #85DABD ");
 
 
         Button getDate = new Button("CONFIRM");
+        getDate.setStyle("-fx-control-inner-background: #85DABD ");
         listOfDate.getChildren().addAll(w,h,j,c,n,s,e, getDate);
         listOfDate.setSpacing(10);
         getDate.setOnAction(actionEvent -> {
@@ -101,11 +103,8 @@ public class App extends Application {
         border.setAlignment(title, Pos.CENTER);
         border.setMargin(title,new Insets(20,0,20,0));
         border.setMargin(list, new Insets(0,10,0,20));
-
-//        Stage stage = new Stage();
-//        stage.setScene(new Scene(listOfDate,500,500));
-//        stage.show();
     }
+
     public void showMap(){
         Platform.runLater(() ->{
             borderClear();
