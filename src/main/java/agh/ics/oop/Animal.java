@@ -6,16 +6,17 @@ import java.util.Random;
 public class Animal implements IMapElement{
     private Vector2d position;
     private MapDirection orientation;
-    private final IWorldMap map;
+    private final AbstractWorldMap map;
     private int energy;
     private final AnimalGenes genes;
     private int numberOfChildren;
     private int numberOfDays;
     private ArrayList<IPositionChangeObserver> observers;
+    private int initialEnergy;
 
 
 
-    public Animal(Vector2d initialPosition, int initialEnergy, IWorldMap map, AnimalGenes genes){
+    public Animal(Vector2d initialPosition, int initialEnergy, AbstractWorldMap map, AnimalGenes genes){
         this.orientation = MapDirection.randomOrientation();
         this.position = initialPosition;
         this.energy = initialEnergy;
@@ -24,6 +25,7 @@ public class Animal implements IMapElement{
         this.numberOfChildren = 0;
         this.numberOfDays = 0;
         this.observers = new ArrayList<>();
+        this.initialEnergy = initialEnergy;
     }
     public void addOneDay(){this.numberOfDays += 1;}
     public int getNumberOfDays(){return numberOfDays;}
@@ -33,6 +35,7 @@ public class Animal implements IMapElement{
     public Vector2d getPosition() {
         return this.position;
     }
+
 
     public int getEnergy(){
         return this.energy;
@@ -80,18 +83,16 @@ public class Animal implements IMapElement{
     }
     public void move(int movement, int energy){
         Vector2d newPosition;
-        //System.out.println(this.getEnergy());
-
         switch (movement) {
             case 0 :
-                newPosition = this.position.add(this.orientation.toUnitVector());
+                newPosition = map.selectPosition(this.position, this.orientation);
                 if(this.map.canMoveTo(newPosition)){
                     Vector2d oldPosition = this.position;
                     this.position = newPosition;
                     positionChanged(oldPosition,newPosition);
                 }
             case 4:
-                newPosition = this.position.subtract(this.orientation.toUnitVector());
+                newPosition = map.selectPosition(this.position,this.orientation);
                 if(this.map.canMoveTo(newPosition)){
                     Vector2d oldPosition = this.position;
                     this.position = newPosition;
@@ -113,17 +114,11 @@ public class Animal implements IMapElement{
         for(int i = 1; i <= movement; i++ ){if(i != 4){this.orientation = this.orientation.next();}}
     }
 
-    @Override
-    public String getPath(IMapElement object) {
-        Animal animal = (Animal) object;
-        MapDirection orientation = animal.orientation;
-        switch (orientation) {
-            case NORTH -> {return "src/main/resources/North.png";}
-            case EAST -> {return "src/main/resources/East.png";}
-            case SOUTH -> {return "src/main/resources/South.png";}
-            case WEST -> {return "src/main/resources/WEST.png";}
-            default -> {return "src/main/resources/WEST.png";}
-        }
+    public int getImage(){
+        if(this.energy >= this.initialEnergy / 4 * 3 ) return 4;
+        else if(this.energy >= this.initialEnergy / 4 * 2) return  3;
+        else if(this.energy >= this.initialEnergy / 4) return 2;
+        else return 1;
     }
 
     public int selectMovement(){return genes.selectMovemnet();}

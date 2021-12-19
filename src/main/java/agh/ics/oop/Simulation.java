@@ -14,8 +14,9 @@ public class Simulation implements Runnable{
     private int energyToMove;
     private App app;
 
-    public Simulation(GetParameters parameters, App applic){
-        this.map = new Map(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass());
+    public Simulation(GetParameters parameters, App applic, String TypeMap){
+        if(TypeMap == "RIGHT") this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass());
+        else this.map = new LeftMap(parameters.getWidth(),parameters.getHeight(), parameters.getJungleRatio(), parameters.getCaloriesGrass());
         this.parameters = parameters;
         this.animals = new ArrayList<>();
         this.grass = new ArrayList<>();

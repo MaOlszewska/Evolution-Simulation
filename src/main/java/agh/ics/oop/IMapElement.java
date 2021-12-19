@@ -9,7 +9,5 @@ public interface IMapElement {
      * @return Vectord2d with object position
      */
     Vector2d getPosition();
-
-    String getPath(IMapElement object);
 }
 

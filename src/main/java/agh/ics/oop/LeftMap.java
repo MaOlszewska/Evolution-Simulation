@@ -1,23 +1,42 @@
-//package agh.ics.oop;
-//
-//import java.util.LinkedHashMap;
-//
-//public class LeftMap extends AbstractWorldMap{  // mapa z zawijaniem
-//    private Vector2d lowerLeft;
-//    private Vector2d upperRight;
-//    private Vector2d lowerLeftJungle;
-//    private Vector2d upperRightJungle;
-//    private int caloriesGrass;
-//    private LinkedHashMap<Vector2d, Grass> grass;
-//    //private LinkedHashMap<Vector2d, Animal> animal;
-//
-//    public LeftMap(int height, int width, int jungleSize, int caloriesGrass) {
-//        this.lowerLeft = new Vector2d(0, 0);
-//        this.upperRight = new Vector2d(width, height);
-//        this.lowerLeftJungle = jungleLowerLeft(height, width, jungleSize);
-//        this.upperRightJungle = jungleUpperRight(height, width, jungleSize);
-//        this.caloriesGrass = caloriesGrass;
-//        //this.animal = new LinkedHashMap<>();
-//        this.grass = new LinkedHashMap<>();
-//    }
-//}
+package agh.ics.oop;
+
+import java.util.LinkedHashMap;
+
+public class LeftMap extends AbstractWorldMap{  // mapa z zawijaniem
+
+    public LeftMap( int width, int height,float jungleSize, int caloriesGrass) {
+        super(width, height, jungleSize, caloriesGrass);
+    }
+
+    @Override
+    public Vector2d selectPosition(Vector2d oldPosition, MapDirection orientation) {
+        int x;
+        int y;
+        Vector2d newPosition = oldPosition.add(orientation.toUnitVector());
+        if(newPosition.follows(lowerLeft) && newPosition.precedes(upperRight)) return newPosition;
+        else{
+            if(newPosition.x < 0) x = upperRight.x;
+            else if(newPosition.x > upperRight.x) x = 0;
+            else x = newPosition.x;
+
+            if(newPosition.y < 0) y = upperRight.y;
+            else if(newPosition.y > upperRight.y) y = 0;
+            else y = newPosition.y;
+
+        }
+        return new Vector2d(x,y);
+    }
+
+    @Override
+    public boolean canMoveTo(Vector2d position) {
+        return true;
+    }
+
+
+    @Override
+    public void removeDeadAnimal(Animal animal) {
+        allAnimals.remove(animal);
+        removeAnimalFromPosition(animal, animal.getPosition());
+        animal.removeObserver(this);
+    }
+}

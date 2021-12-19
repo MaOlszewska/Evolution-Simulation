@@ -7,6 +7,44 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
     LinkedList<Animal> allAnimals = new LinkedList<>();
     HashMap<Vector2d, PriorityQueue<Animal>> animals = new LinkedHashMap<>();
     HashMap<Vector2d, Grass> grass = new LinkedHashMap<>();
+    protected Vector2d lowerLeft;
+    protected Vector2d upperRight;
+    protected Vector2d lowerLeftJungle;
+    protected Vector2d upperRightJungle;
+    protected int caloriesGrass;
+
+    public AbstractWorldMap(int width, int height, float jungleRatio, int caloriesGrass ) {
+        this.lowerLeft = new Vector2d(0, 0);
+        this.upperRight = new Vector2d(width -1 , height- 1);
+        this.lowerLeftJungle = jungleLowerLeft(width, height, jungleRatio);
+        this.upperRightJungle = jungleUpperRight(width, height, jungleRatio);
+        this.caloriesGrass = caloriesGrass;
+    }
+
+    public abstract Vector2d selectPosition(Vector2d oldPosition, MapDirection orientation);
+
+    public void positionChanged(Animal animal,Vector2d oldPosition, Vector2d newPosition) {
+        removeAnimalFromPosition(animal, oldPosition);
+        addAnimalAtPosition(animal,newPosition);
+    }
+
+    public void addAnimalAtPosition(Animal animal, Vector2d position){
+        PriorityQueue<Animal> animalsOnPos = animals.get(position);
+        if (animalsOnPos == null) {
+            addPriorityAnimal(animal, animal.getPosition());}
+        else {animalsOnPos.add(animal);}
+    }
+
+    public ArrayList getAnimals() {
+        ArrayList allAnimals = new ArrayList();
+        for (Vector2d position : animals.keySet()) {
+            PriorityQueue<Animal> animalsOnPos = animals.get(position);
+            if(animalsOnPos.size() != 0){
+                allAnimals.add(animalsOnPos.peek());
+            }
+        }
+        return allAnimals;
+    }
 
     @Override
     public void place(Animal animal) {
@@ -62,25 +100,88 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return true;
     }
 
-    public abstract Vector2d getLowerLeft();
-    public abstract Vector2d getLowerLeftJungle();
-    public abstract Vector2d getUpperRight();
-    public abstract Vector2d getUpperRightJungle();
-    public abstract void removeEatenGrass(Grass tuft);
+    public Vector2d getLowerLeft(){return lowerLeft;}
+    public Vector2d getLowerLeftJungle(){return lowerLeftJungle;}
+    public Vector2d getUpperRight(){return upperRight;}
+    public Vector2d getUpperRightJungle(){return upperRightJungle;}
 
-    public abstract LinkedList<Animal> hungryAnimalsInPosition(Vector2d position);
+    public void removeEatenGrass(Grass tuft) {
+        grass.remove(tuft.getPosition(),tuft);
+    }
 
-    public abstract boolean isEmptyJungle();
+    public LinkedList<Animal> hungryAnimalsInPosition(Vector2d position) {
+        PriorityQueue<Animal> animalsOnPos = animals.get(position);
+        if (animalsOnPos != null && !animalsOnPos.isEmpty()){
+            LinkedList<Animal> toFeed = new LinkedList<>();
+            Animal first = animalsOnPos.poll();
+            toFeed.add(first);
 
-    public abstract Grass plantTuftInJungle();
+            while (animalsOnPos.peek() != null && animalsOnPos.peek().getEnergy() == first.getEnergy()){
+                toFeed.add(animalsOnPos.poll());
+            }
+            animalsOnPos.addAll(toFeed);
+            return toFeed;
+        }
+        else return null;
+    }
 
-    public abstract boolean isEmptySteppe();
+    public boolean isEmptyJungle() {
+        for(int i = lowerLeftJungle.x; i <= upperRightJungle.x; i++ ) {
+            for (int j = lowerLeftJungle.y; j <= upperRightJungle.y; j++) {
+                if (!isOccupied(new Vector2d(i,j))) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
-    public abstract Grass plantTuftInSteppe();
+    public Grass plantTuftInJungle() {
+        Random random = new Random();
+        Vector2d pos;
+        do {
+            int posX = lowerLeftJungle.x + random.nextInt(upperRightJungle.x - lowerLeftJungle.x + 1);
+            int posY = lowerLeftJungle.y + random.nextInt(upperRightJungle.y - lowerLeftJungle.y + 1);
+            pos = new Vector2d(posX,posY);
+        }while(isOccupied(pos));
+        Grass grasses = new Grass(pos);
+        grass.put(pos,grasses);
+        return grasses;
+    }
+
+    public boolean isEmptySteppe() {
+        for(int i = 0; i <= upperRight.x;i++ ) {
+            for (int j = 0; j <= upperRight.y; j++) {
+                Vector2d pos = new Vector2d(i,j);
+                if((!pos.follows(lowerLeftJungle) && !pos.precedes(upperRightJungle))) {
+                    if (!isOccupied(pos)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+    public Grass plantTuftInSteppe() {
+        Random random = new Random();
+        Vector2d pos;
+        do {
+            int posX =  random.nextInt(upperRight.x + 1);
+            int posY =  random.nextInt(upperRight.y + 1);
+            pos = new Vector2d(posX, posY);
+        }while(isOccupied(pos) || (pos.follows(lowerLeftJungle) && pos.precedes(upperRightJungle)));
+        Grass grasses = new Grass(pos);
+        grass.put(pos,grasses);
+        return grasses;
+    }
 
     public abstract void removeDeadAnimal(Animal animal);
 
-    public abstract void removeAnimalFromPosition(Animal animal, Vector2d oldPosition);
+    public void removeAnimalFromPosition(Animal animal, Vector2d oldPosition) {
+        animals.get(oldPosition).remove(animal);
+    }
+
 
     public LinkedList<LinkedList<Animal>> findPair(float energyToMove) {
         LinkedList<LinkedList<Animal>> allPairToReproduce = new LinkedList<>();

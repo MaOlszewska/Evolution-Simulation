@@ -13,6 +13,7 @@ import javafx.scene.layout.*;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Map;
 
@@ -73,8 +74,8 @@ public class App extends Application {
             int startEnergy = Integer.parseInt(s.getText());
             int energyToMOve = Integer.parseInt(e.getText());
             param = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve);
-            engine = new Simulation(param ,this );
-            secondEngine = new Simulation(param, this);
+            engine = new Simulation(param ,this, "RIGHT" );
+            secondEngine = new Simulation(param, this, "LEFT");
             Thread engineThread = new Thread(engine);
             Thread secondEngineThread = new Thread(secondEngine);
             engineThread.start();
@@ -108,8 +109,21 @@ public class App extends Application {
     public void showMap(){
         Platform.runLater(() ->{
             borderClear();
-            UpdateMap Map = new UpdateMap(engine);
-            UpdateMap secondMap = new UpdateMap(secondEngine);
+            UpdateMap Map = null;
+            try {
+                Map = new UpdateMap(engine);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            UpdateMap secondMap = null;
+            try {
+                secondMap = new UpdateMap(secondEngine);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            Label title = new Label("The mystery of the beginning of all things is unsolved, but you can try... ");
+            title.setStyle("-fx-font-weight: bold");
+            title.setFont(new Font(15));
             gridPane = Map.getGridPane();
             secondGridPane = secondMap.getGridPane();
             stats = Map.getStats();
@@ -119,14 +133,17 @@ public class App extends Application {
             border.setAlignment(gridPane, Pos.CENTER);
             VBox left =  new VBox(secondGridPane, secondStats);
             border.setLeft(left);
+            border.setTop(title);
+            border.setTop(title);
+            border.setAlignment(title, Pos.CENTER);
+            border.setMargin(title,new Insets(20,0,20,0));
             border.setMargin(left, new Insets(20,20,0,30));
             border.setMargin(right, new Insets(20,20,0,30));
         });
     }
 
     private void borderClear(){
-        border.setCenter(null);
-        border.setLeft(null);
+        border.getChildren().clear();
     }
 
 }

@@ -4,9 +4,14 @@ import agh.ics.oop.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class UpdateMap {
@@ -14,7 +19,7 @@ public class UpdateMap {
     private GridPane gridPane;
     private VBox stats;
 
-    public UpdateMap(Simulation engine){
+    public UpdateMap(Simulation engine) throws FileNotFoundException {
         this.engine = engine;
         this.gridPane = new GridPane();
         this.stats = showStatistic();
@@ -30,7 +35,7 @@ public class UpdateMap {
     public GridPane getGridPane(){ return this.gridPane;}
     public VBox getStats(){return this.stats;}
 
-    private void createMap(){
+    private void createMap() throws FileNotFoundException {
         gridPane.getChildren().clear();
         gridPane.setGridLinesVisible(true);
         coloringMap();
@@ -57,16 +62,43 @@ public class UpdateMap {
         return stats;
     }
 
-    private void drawObjects()  {
-        ArrayList<Animal> animals = engine.getAnimals();
+    private void drawObjects() throws FileNotFoundException {
+        Image grassImage = new Image(new FileInputStream("src/main/resources/grass.png"));
+        Image elephantImage = new Image(new FileInputStream("src/main/resources/elephant.png"));
+        Image giraffeImage = new Image(new FileInputStream("src/main/resources/giraffe.png"));
+        Image catImage = new Image(new FileInputStream("src/main/resources/cat.png"));
+        Image mouseImage = new Image(new FileInputStream("src/main/resources/mouse.png"));
+
+        IWorldMap map = engine.getMap();
+        AbstractWorldMap abstractMap = (AbstractWorldMap) map;
+        ArrayList<Animal> animals = abstractMap.getAnimals();
+        ImageView imageView  = new ImageView();
         for(Animal animal : animals){
-            Label a = new Label("A");
-            gridPane.add(a, animal.getPosition().x, animal.getPosition().y);
+            switch (animal.getImage()) {
+                case 4 :
+                    imageView = new ImageView(elephantImage);
+                    break;
+                case 3 :
+                    imageView = new ImageView(giraffeImage);
+                    break;
+                case 2 :
+                    imageView = new ImageView(catImage);
+                    break;
+                case 1 :
+                    imageView = new ImageView(mouseImage);
+                    break;
+            }
+            imageView.setFitWidth(20);
+            imageView.setFitHeight(20);
+            gridPane.add(imageView, animal.getPosition().x, animal.getPosition().y);
         }
+
         ArrayList<Grass> grass = engine.getGrass();
         for(Grass gras : grass){
-            Label g= new Label("#");
-            gridPane.add(g, gras.getPosition().x, gras.getPosition().y);
+            imageView = new ImageView(grassImage);
+            imageView.setFitWidth(15);
+            imageView.setFitHeight(15);
+            gridPane.add(imageView, gras.getPosition().x,gras.getPosition().y);
         }
     }
 
