@@ -24,10 +24,10 @@ public class UpdateMap {
         this.gridPane = new GridPane();
         this.stats = showStatistic();
         for (int i = 0; i < engine.getParameters().getWidth(); i++){
-            this.gridPane.getColumnConstraints().add(new ColumnConstraints(20));
+            this.gridPane.getColumnConstraints().add(new ColumnConstraints(800/ (2*engine.getMap().getWidth() )));
         }
         for (int i = 0; i < engine.getParameters().getHeight(); i++){
-            this.gridPane.getRowConstraints().add(new RowConstraints(20));
+            this.gridPane.getRowConstraints().add(new RowConstraints(800 / (2*engine.getMap().getHeight()) ));
         }
         createMap();
     }
@@ -88,16 +88,16 @@ public class UpdateMap {
                     imageView = new ImageView(mouseImage);
                     break;
             }
-            imageView.setFitWidth(20);
-            imageView.setFitHeight(20);
+            imageView.setFitWidth(800 / (4*engine.getMap().getWidth() ));
+            imageView.setFitHeight(800 / (4*engine.getMap().getWidth() ));
             gridPane.add(imageView, animal.getPosition().x, animal.getPosition().y);
         }
 
         ArrayList<Grass> grass = engine.getGrass();
         for(Grass gras : grass){
             imageView = new ImageView(grassImage);
-            imageView.setFitWidth(15);
-            imageView.setFitHeight(15);
+            imageView.setFitWidth(800 / (4*engine.getMap().getWidth() ));
+            imageView.setFitHeight(800 / (4*engine.getMap().getWidth() ));
             gridPane.add(imageView, gras.getPosition().x,gras.getPosition().y);
         }
     }

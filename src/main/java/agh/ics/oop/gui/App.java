@@ -27,18 +27,19 @@ public class App extends Application {
     private BorderPane border = new BorderPane();
     private VBox stats;
     private VBox secondStats;
+    private Button start = new Button("START");
+    private Button Start = new Button("START/STOP");
+
 
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Evolution");
-        primaryStage.setScene(new Scene(border, 600,600));
+        primaryStage.setScene(new Scene(border, 1000,800));
         primaryStage.show();
     }
 
     @Override
     public void init() {
         getParam();
-
-
     }
 
     public void getParam(){
@@ -65,7 +66,9 @@ public class App extends Application {
         getDate.setStyle("-fx-control-inner-background: #85DABD ");
         listOfDate.getChildren().addAll(w,h,j,c,n,s,e, getDate);
         listOfDate.setSpacing(10);
+
         getDate.setOnAction(actionEvent -> {
+            borderClear();
             int width = Integer.parseInt(w.getText());
             int height = Integer.parseInt(h.getText());
             float jungleRatio = Float.parseFloat(j.getText());
@@ -73,14 +76,14 @@ public class App extends Application {
             int numberOfAnimals = Integer.parseInt(n.getText());
             int startEnergy = Integer.parseInt(s.getText());
             int energyToMOve = Integer.parseInt(e.getText());
+            border.setCenter(start);
             param = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve);
             engine = new Simulation(param ,this, "RIGHT" );
             secondEngine = new Simulation(param, this, "LEFT");
-            Thread engineThread = new Thread(engine);
-            Thread secondEngineThread = new Thread(secondEngine);
-            engineThread.start();
-            secondEngineThread.start();
+            startApp();
+
         });
+
         Label H = new Label("Enter the width of the map ");
         Label W = new Label("Enter the height of the map ");
         Label J = new Label("Enter the Jungle Ratio  ");
@@ -96,6 +99,7 @@ public class App extends Application {
         list.getChildren().addAll(W,H, J, C, N, S, E);
         list.setAlignment(Pos.TOP_LEFT);
         list.setSpacing(18);
+
         border.setCenter(listOfDate);
         border.setAlignment(listOfDate, Pos.CENTER);
         border.setLeft(list);
@@ -104,6 +108,18 @@ public class App extends Application {
         border.setAlignment(title, Pos.CENTER);
         border.setMargin(title,new Insets(20,0,20,0));
         border.setMargin(list, new Insets(0,10,0,20));
+    }
+
+    public void startApp(){
+        Thread engineThread = new Thread(engine);
+        Thread secondEngineThread = new Thread(secondEngine);
+        border.setCenter(start);
+        start.setOnAction(action->{
+            engine.changeStatus();
+            secondEngine.changeStatus();
+            engineThread.start();
+            secondEngineThread.start();
+        });
     }
 
     public void showMap(){
@@ -134,7 +150,12 @@ public class App extends Application {
             VBox left =  new VBox(secondGridPane, secondStats);
             border.setLeft(left);
             border.setTop(title);
-            border.setTop(title);
+            border.setBottom(Start);
+            border.setAlignment(Start, Pos.CENTER);
+            Start.setOnAction(action -> {
+                engine.changeStatus();
+                secondEngine.changeStatus();
+            });
             border.setAlignment(title, Pos.CENTER);
             border.setMargin(title,new Insets(20,0,20,0));
             border.setMargin(left, new Insets(20,20,0,30));

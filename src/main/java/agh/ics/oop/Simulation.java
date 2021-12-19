@@ -13,6 +13,7 @@ public class Simulation implements Runnable{
     private Statistics statistics;
     private int energyToMove;
     private App app;
+    private Boolean run;
 
     public Simulation(GetParameters parameters, App applic, String TypeMap){
         if(TypeMap == "RIGHT") this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass());
@@ -23,11 +24,12 @@ public class Simulation implements Runnable{
         this.energyToMove = parameters.getEnergyToMove();
         this.statistics = new Statistics(parameters.getStartEnergy(), parameters.getNumberOfAnimals());
         this.app = applic;
+        this.run = false;
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
-
+    public void changeStatus(){this.run = !this.run;}
     public ArrayList<Animal> getAnimals(){return this.animals;}
-    public IWorldMap getMap(){return this.map;}
+    public AbstractWorldMap getMap(){return this.map;}
     public GetParameters getParameters(){return this.parameters;}
     public ArrayList<Grass> getGrass() {return this.grass;}
     public Statistics getStatistics(){return this.statistics;}
@@ -52,13 +54,15 @@ public class Simulation implements Runnable{
     }
 
     public void day(){
-        removeDeadAnimals();
-        animalsMove();
-        consumptionGrass();
-        animalReproduction();
-        plantTuft();
-        app.showMap();
-        statistics.addOneDay();
+        if(run) {
+            removeDeadAnimals();
+            animalsMove();
+            consumptionGrass();
+            animalReproduction();
+            plantTuft();
+            app.showMap();
+            statistics.addOneDay();
+        }
     }
 
     public void run(){

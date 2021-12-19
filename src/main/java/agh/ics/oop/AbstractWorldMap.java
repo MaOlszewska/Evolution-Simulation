@@ -12,15 +12,20 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
     protected Vector2d lowerLeftJungle;
     protected Vector2d upperRightJungle;
     protected int caloriesGrass;
+    protected int height;
+    protected int width;
 
     public AbstractWorldMap(int width, int height, float jungleRatio, int caloriesGrass ) {
         this.lowerLeft = new Vector2d(0, 0);
-        this.upperRight = new Vector2d(width -1 , height- 1);
+        this.upperRight = new Vector2d(width - 1 , height - 1);
         this.lowerLeftJungle = jungleLowerLeft(width, height, jungleRatio);
         this.upperRightJungle = jungleUpperRight(width, height, jungleRatio);
         this.caloriesGrass = caloriesGrass;
+        this.height = height;
+        this.width = width;
     }
-
+    public int getHeight(){return this.height;}
+    public int getWidth(){return this.width;}
     public abstract Vector2d selectPosition(Vector2d oldPosition, MapDirection orientation);
 
     public void positionChanged(Animal animal,Vector2d oldPosition, Vector2d newPosition) {
@@ -80,15 +85,13 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
 
     public Vector2d jungleLowerLeft( int width, int height,float jungleRatio) {
         int jungleSizeX = (int) (width * jungleRatio);
-        //int jungleSizeY = (int) (height * jungleRatio);
         int jungleX = (width - jungleSizeX) / 2;
         int jungleY = (height - jungleSizeX) / 2;
-        return new Vector2d(jungleX + 1, jungleY + 1);
+        return new Vector2d(jungleX , jungleY);
     }
 
     public Vector2d jungleUpperRight( int width, int height, float jungleRatio) {
         int jungleSizeX = (int) (width * jungleRatio);
-        //int jungleSizeY = (int) (height * jungleRatio);
         int jungleX = (width - jungleSizeX) / 2;
         int jungleY = (height - jungleSizeX) / 2;
         return new Vector2d(jungleX + jungleSizeX, jungleY + jungleSizeX);
