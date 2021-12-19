@@ -115,10 +115,11 @@ public class UpdateMap {
                 Vector2d pos = new Vector2d(i, j);
                 StackPane till = new StackPane();
                 if(pos.follows(lowerLeftJungle) && pos.precedes(upperRightJungle)) {
-                    till.setBackground(new Background(new BackgroundFill(Color.DARKGREEN, CornerRadii.EMPTY, Insets.EMPTY)));
+                    till.setStyle("-fx-background-color: #00b27a; ");
                     gridPane.add(till, i, j);
                 } else {
-                    till.setBackground(new Background(new BackgroundFill(Color.OLIVEDRAB, CornerRadii.EMPTY, Insets.EMPTY)));
+                    till.setStyle("-fx-background-color: #00ce8e; ");
+                    //till.setBackground(new Background(new BackgroundFill(Color.OLIVEDRAB, CornerRadii.EMPTY, Insets.EMPTY)));
                     gridPane.add(till, i, j);
                 }
             }
