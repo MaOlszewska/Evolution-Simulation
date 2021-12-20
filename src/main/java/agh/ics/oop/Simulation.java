@@ -69,7 +69,7 @@ public class Simulation implements Runnable{
         while (animals.size() > 0) {
             try {
                 day();
-                Thread.sleep(400);
+                Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 System.out.println(ex.toString());
             }

@@ -1,11 +1,13 @@
 package agh.ics.oop.gui;
 
 import agh.ics.oop.*;
+import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
+import javafx.scene.chart.BarChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -33,13 +35,14 @@ public class App extends Application {
     private VBox secondStats;
     private Button start = new Button("START");
     private Button Start = new Button("START/STOP");
-
+    private Stage stage;
 
 
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Evolution");
-        primaryStage.setScene(new Scene(border, 1000,800));
-        primaryStage.show();
+        stage = primaryStage;
+        stage.setTitle("Evolution");
+        stage.setScene(new Scene(border, 1200,750));
+        stage.show();
     }
 
     @Override
@@ -49,13 +52,13 @@ public class App extends Application {
 
     public void getParam() throws FileNotFoundException {
         VBox listOfDate = new VBox();
-        TextField w = new TextField("Width");
-        TextField h = new TextField("Height");
-        TextField j = new TextField("Jungle ratio");
-        TextField c = new TextField("Calories of grass");
-        TextField n = new TextField("Number of animal");
-        TextField s = new TextField("Start Energy");
-        TextField e = new TextField("Energy to move");
+        TextField w = new TextField("10");
+        TextField h = new TextField("10");
+        TextField j = new TextField("0.5");
+        TextField c = new TextField("50");
+        TextField n = new TextField("30");
+        TextField s = new TextField("100");
+        TextField e = new TextField("5");
 
         w.setMaxWidth(120);w.setStyle("-fx-background-color: #00ce8e; ");
         h.setMaxWidth(120);h.setStyle("-fx-background-color: #00ce8e; ");
@@ -92,8 +95,8 @@ public class App extends Application {
         Image worldIamge = new Image(new FileInputStream("src/main/resources/world.png"));
         ImageView imageView = new ImageView(worldIamge);
         border.setAlignment(imageView, Pos.TOP_CENTER);
-        imageView.setFitWidth(400);
-        imageView.setFitHeight(400);
+        imageView.setFitWidth(300);
+        imageView.setFitHeight(300);
         border.setBottom(imageView);
         border.setCenter(lists);
         border.setTop(title);
@@ -155,27 +158,39 @@ public class App extends Application {
             stats = Map.getStats();
             secondStats = secondMap.getStats();
             VBox right = new VBox(gridPane, stats);
-            border.setCenter(right);
-            border.setAlignment(gridPane, Pos.CENTER);
+            border.setRight(right);
             VBox left =  new VBox(secondGridPane, secondStats);
             border.setLeft(left);
             border.setTop(title);
-            border.setBottom(Start);
-            border.setAlignment(Start, Pos.CENTER);
+            Button exitButton = new Button("EXIT");
+            HBox buttons = new HBox();
+            buttons.setSpacing(10);
+            buttons.getChildren().addAll(Start, exitButton);
+            border.setBottom(buttons);
+            buttons.setAlignment(Pos.CENTER);
+            //border.setAlignment(buttons, Pos.CENTER);
+            exitButton.setStyle("-fx-background-color: #d79097; ");
             Start.setStyle("-fx-background-color: #d79097; ");
             Start.setOnAction(action -> {
                 engine.changeStatus();
                 secondEngine.changeStatus();
             });
+            exitButton.setOnAction(action ->{
+                stage.close();
+            });
+            BarChartMaps chart = new BarChartMaps(engine.getStatistics(), secondEngine.getStatistics());
+            BarChart barChart = chart.getBarChart();
+            border.setCenter(barChart);
+            border.setAlignment(barChart,Pos.TOP_CENTER);
             border.setAlignment(title, Pos.CENTER);
             border.setMargin(title,new Insets(20,0,20,0));
             border.setMargin(left, new Insets(20,20,0,30));
             border.setMargin(right, new Insets(20,20,0,30));
+            border.setMargin(buttons, new Insets(10,0,10,0));
         });
     }
 
     private void borderClear(){
         border.getChildren().clear();
     }
-
 }

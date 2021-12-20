@@ -3,6 +3,10 @@ package agh.ics.oop.gui;
 import agh.ics.oop.*;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.chart.BarChart;
+import javafx.scene.chart.CategoryAxis;
+import javafx.scene.chart.NumberAxis;
+import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -19,21 +23,23 @@ public class UpdateMap {
     private GridPane gridPane;
     private VBox stats;
 
+
     public UpdateMap(Simulation engine) throws FileNotFoundException {
         this.engine = engine;
         this.gridPane = new GridPane();
         this.stats = showStatistic();
         for (int i = 0; i < engine.getParameters().getWidth(); i++){
-            this.gridPane.getColumnConstraints().add(new ColumnConstraints(800/ (2*engine.getMap().getWidth() )));
+            this.gridPane.getColumnConstraints().add(new ColumnConstraints(1200/ (3*engine.getMap().getWidth() )));
         }
         for (int i = 0; i < engine.getParameters().getHeight(); i++){
-            this.gridPane.getRowConstraints().add(new RowConstraints(800 / (2*engine.getMap().getHeight()) ));
+            this.gridPane.getRowConstraints().add(new RowConstraints(700 / (2*engine.getMap().getHeight()) ));
         }
         createMap();
     }
 
     public GridPane getGridPane(){ return this.gridPane;}
     public VBox getStats(){return this.stats;}
+
 
     private void createMap() throws FileNotFoundException {
         gridPane.getChildren().clear();
@@ -57,7 +63,7 @@ public class UpdateMap {
 
         VBox stats = new VBox();
         stats.getChildren().addAll(title,worldDays, numberOfAliveAnimals, numberOfGrass, numberOfDeadAnimals, avgEnergy, avgLifeDaysDeadAnimal, avgChildren, dominantGentype);
-        stats.setAlignment(Pos.TOP_LEFT);
+        stats.setAlignment(Pos.TOP_CENTER);
         stats.setSpacing(10);
         return stats;
     }
@@ -88,17 +94,19 @@ public class UpdateMap {
                     imageView = new ImageView(mouseImage);
                     break;
             }
-            imageView.setFitWidth(800 / (4*engine.getMap().getWidth() ));
-            imageView.setFitHeight(800 / (4*engine.getMap().getWidth() ));
+            imageView.setFitWidth(600 / (4*engine.getMap().getWidth() ));
+            imageView.setFitHeight(600 / (4*engine.getMap().getWidth() ));
             gridPane.add(imageView, animal.getPosition().x, animal.getPosition().y);
+            gridPane.setAlignment(Pos.CENTER);
         }
 
         ArrayList<Grass> grass = engine.getGrass();
         for(Grass gras : grass){
             imageView = new ImageView(grassImage);
-            imageView.setFitWidth(800 / (4*engine.getMap().getWidth() ));
-            imageView.setFitHeight(800 / (4*engine.getMap().getWidth() ));
+            imageView.setFitWidth(600 / (4*engine.getMap().getWidth() ));
+            imageView.setFitHeight(600 / (4*engine.getMap().getWidth() ));
             gridPane.add(imageView, gras.getPosition().x,gras.getPosition().y);
+            gridPane.setAlignment(Pos.CENTER);
         }
     }
 
@@ -125,4 +133,6 @@ public class UpdateMap {
             }
         }
     }
+
+
 }

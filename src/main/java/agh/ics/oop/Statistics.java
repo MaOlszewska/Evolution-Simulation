@@ -76,5 +76,9 @@ public class Statistics {
         }
         this.dominantGenotype = dominant;
     }
+
+    public int getMax(){
+        return Math.max(Math.max(numberOfAliveAnimals, numberOfDeadAnimals),Math.max(avgEnergy, numberOfGrass));
+    }
 }
 
