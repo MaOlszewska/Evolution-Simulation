@@ -8,19 +8,19 @@ import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
 
-class BarChartMaps {
+public class Chart {
     private Statistics statisticRight;
     private Statistics statisticLeft;
-    private BarChart barChart;
+    private javafx.scene.chart.BarChart barChart;
 
-    public BarChartMaps (Statistics statsRight, Statistics statsLeft){
+    public Chart(Statistics statsRight, Statistics statsLeft){
         this.statisticRight = statsRight;
         this.statisticLeft = statsLeft;
         CategoryAxis xAxis = new CategoryAxis();
         NumberAxis yAxis = new NumberAxis(0,Math.max(statisticLeft.getMax(), statisticRight.getMax()) + 5,20);
         xAxis.setTickMarkVisible(true);
         //yAxis.setTickMarkVisible(true);
-        this.barChart = new BarChart(xAxis, yAxis);
+        this.barChart = new javafx.scene.chart.BarChart(xAxis, yAxis);
         barChart.lookup(".chart-plot-background").setStyle("-fx-background-color: transparent;");
         createBarChart();
 
@@ -55,6 +55,6 @@ class BarChartMaps {
         //barChart.lookup(".default-color0.chart-bar").setStyle("-fx-bar-fill: #d79097;");
     }
 
-    public BarChart getBarChart(){return this.barChart;}
+    public javafx.scene.chart.BarChart getBarChart(){return this.barChart;}
 
 }

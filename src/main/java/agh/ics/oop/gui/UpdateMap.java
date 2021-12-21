@@ -1,17 +1,11 @@
 package agh.ics.oop.gui;
 
 import agh.ics.oop.*;
-import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.chart.BarChart;
-import javafx.scene.chart.CategoryAxis;
-import javafx.scene.chart.NumberAxis;
-import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
-import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 
 import java.io.FileInputStream;
@@ -19,36 +13,36 @@ import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
 public class UpdateMap {
-    private Simulation engine;
-    private GridPane gridPane;
-    private VBox stats;
+    private final Simulation engine;
+    private final GridPane gridPane;
+    private final VBox stats;
 
 
     public UpdateMap(Simulation engine) throws FileNotFoundException {
         this.engine = engine;
         this.gridPane = new GridPane();
-        this.stats = showStatistic();
+        this.stats = updateStatistic();
         for (int i = 0; i < engine.getParameters().getWidth(); i++){
             this.gridPane.getColumnConstraints().add(new ColumnConstraints(1200/ (3*engine.getMap().getWidth() )));
         }
         for (int i = 0; i < engine.getParameters().getHeight(); i++){
             this.gridPane.getRowConstraints().add(new RowConstraints(700 / (2*engine.getMap().getHeight()) ));
         }
-        createMap();
+        updateMap();
     }
 
     public GridPane getGridPane(){ return this.gridPane;}
     public VBox getStats(){return this.stats;}
 
 
-    private void createMap() throws FileNotFoundException {
+    private void updateMap() throws FileNotFoundException {
         gridPane.getChildren().clear();
         gridPane.setGridLinesVisible(true);
         coloringMap();
-        drawObjects();
+        drawingObjects();
     }
 
-    private VBox showStatistic(){
+    private VBox updateStatistic(){
         Statistics statistics = engine.getStatistics();
         Label title = new Label("SIMULATION STATISTIC");
         title.setFont(new Font(15));
@@ -68,7 +62,7 @@ public class UpdateMap {
         return stats;
     }
 
-    private void drawObjects() throws FileNotFoundException {
+    private void drawingObjects() throws FileNotFoundException {
         Image grassImage = new Image(new FileInputStream("src/main/resources/grass.png"));
         Image elephantImage = new Image(new FileInputStream("src/main/resources/elephant.png"));
         Image giraffeImage = new Image(new FileInputStream("src/main/resources/giraffe.png"));
@@ -127,7 +121,6 @@ public class UpdateMap {
                     gridPane.add(till, i, j);
                 } else {
                     till.setStyle("-fx-background-color: #00ce8e; ");
-                    //till.setBackground(new Background(new BackgroundFill(Color.OLIVEDRAB, CornerRadii.EMPTY, Insets.EMPTY)));
                     gridPane.add(till, i, j);
                 }
             }

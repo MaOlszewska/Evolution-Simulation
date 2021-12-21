@@ -87,14 +87,18 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
 
 
     public Vector2d jungleLowerLeft( int width, int height,float jungleRatio) {
-        int jungleSizeX = (int) (width * jungleRatio);
+        int jungleSizeX;
+        if(width <= height)  jungleSizeX = (int) (width * jungleRatio);
+        else jungleSizeX = (int) (height * jungleRatio);
         int jungleX = (width - jungleSizeX) / 2;
         int jungleY = (height - jungleSizeX) / 2;
         return new Vector2d(jungleX , jungleY);
     }
 
     public Vector2d jungleUpperRight( int width, int height, float jungleRatio) {
-        int jungleSizeX = (int) (width * jungleRatio);
+        int jungleSizeX;
+        if(width <= height)  jungleSizeX = (int) (width * jungleRatio);
+        else jungleSizeX = (int) (height * jungleRatio);
         int jungleX = (width - jungleSizeX) / 2;
         int jungleY = (height - jungleSizeX) / 2;
         return new Vector2d(jungleX + jungleSizeX, jungleY + jungleSizeX);

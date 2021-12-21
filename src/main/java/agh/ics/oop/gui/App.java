@@ -1,13 +1,11 @@
 package agh.ics.oop.gui;
 
 import agh.ics.oop.*;
-import javafx.animation.AnimationTimer;
 import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
-import javafx.scene.chart.BarChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -16,42 +14,44 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
-import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.util.List;
-import java.util.Map;
 
 
 public class App extends Application {
-    private Simulation engine;
-    private GridPane gridPane;
-    private GridPane secondGridPane;
-    private Simulation secondEngine;
-    private GetParameters param;
+    private Simulation engineRight;
+    private GridPane gridPaneRight;
+    private GridPane gridPaneLeft;
+    private Simulation engineLeft;
+    private GetParameters params;
     private BorderPane border = new BorderPane();
-    private VBox stats;
-    private VBox secondStats;
-    private Button start = new Button("START");
-    private Button Start = new Button("START/STOP");
-    private Stage stage;
+    private VBox statsRight;
+    private VBox statsLeft;
+    private Button startButton = new Button("START");
+    private Button buttonStartStop = new Button("START/STOP");
+    private Button exitButton = new Button("EXIT");
 
 
     public void start(Stage primaryStage) throws Exception {
-        stage = primaryStage;
-        stage.setTitle("Evolution");
-        stage.setScene(new Scene(border, 1200,750));
-        stage.show();
+        primaryStage.setTitle("Evolution");
+        primaryStage.setScene(new Scene(border, 1200,750));
+        primaryStage.show();
+    }
+
+    private void initBorder(){
+        Label title = new Label("The mystery of the beginning of all things is unsolved, but you can try... ");
+        title.setStyle("-fx-font-weight: bold");
+        title.setFont(new Font(15));
+        border.setTop(title);
+        border.setAlignment(title, Pos.CENTER);
+        border.setMargin(title,new Insets(20,0,20,0));
     }
 
     @Override
     public void init() throws FileNotFoundException {
-        getParam();
-    }
-
-    public void getParam() throws FileNotFoundException {
+        initBorder();
         VBox listOfDate = new VBox();
         TextField w = new TextField("10");
         TextField h = new TextField("10");
@@ -70,8 +70,8 @@ public class App extends Application {
         n.setMaxWidth(120);n.setStyle("-fx-background-color: #00ce8e; ");
         s.setMaxWidth(120);s.setStyle("-fx-background-color: #00ce8e; ");
         e.setMaxWidth(120);e.setStyle("-fx-background-color: #00ce8e; ");
-        mL.setMaxWidth(120);e.setStyle("-fx-background-color: #00ce8e; ");
-        mR.setMaxWidth(120);e.setStyle("-fx-background-color: #00ce8e; ");
+        mL.setMaxWidth(120);mL.setStyle("-fx-background-color: #00ce8e; ");
+        mR.setMaxWidth(120);mR.setStyle("-fx-background-color: #00ce8e; ");
 
         Button getDate = new Button("CONFIRM");
 
@@ -90,9 +90,7 @@ public class App extends Application {
         Label ML = new Label("Enter true if left map is magic  ");
         Label MR = new Label("Enter true if right map is magic ");
 
-        Label title = new Label("The mystery of the beginning of all things is unsolved, but you can try... ");
-        title.setStyle("-fx-font-weight: bold");
-        title.setFont(new Font(15));
+
         VBox list = new VBox();
         list.getChildren().addAll(W,H, J, C, N, S, E, ML, MR);
         list.setSpacing(18);
@@ -106,9 +104,7 @@ public class App extends Application {
         imageView.setFitHeight(300);
         border.setBottom(imageView);
         border.setCenter(lists);
-        border.setTop(title);
-        border.setAlignment(title, Pos.CENTER);
-        border.setMargin(title,new Insets(20,0,20,0));
+
         border.setBackground(new Background(new BackgroundFill(Color.PALETURQUOISE, CornerRadii.EMPTY, Insets.EMPTY)));
         getDate.setOnAction(actionEvent -> {
             borderClear();
@@ -121,100 +117,112 @@ public class App extends Application {
             int energyToMOve = Integer.parseInt(e.getText());
             boolean magicLeft = Boolean.parseBoolean(mL.getText());
             boolean magicRight = Boolean.parseBoolean(mR.getText());
-            border.setCenter(start);
-            param = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
-            engine = new Simulation(param ,this, "RIGHT" );
-            secondEngine = new Simulation(param, this, "LEFT");
+            border.setCenter(startButton);
+            params = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
+            engineRight = new Simulation(params,this, "RIGHT" );
+            engineLeft = new Simulation(params, this, "LEFT");
             startApp();
 
         });
     }
 
 
+    private void addButtons(){
+        HBox buttons = new HBox();
+        buttons.setSpacing(20);
+
+        exitButton.setOnAction(action ->{
+            Platform.exit();
+        });
+
+        buttonStartStop.setOnAction(action -> {
+            engineRight.changeStatus();
+            engineLeft.changeStatus();
+        });
+
+        buttons.getChildren().addAll(buttonStartStop, exitButton);
+        buttons.setAlignment(Pos.CENTER);
+        border.setAlignment(buttons, Pos.CENTER);
+        exitButton.setStyle("-fx-background-color: #d79097; ");
+        buttonStartStop.setStyle("-fx-background-color: #d79097; ");
+        border.setMargin(buttons, new Insets(10,0,10,0));
+        border.setBottom(buttons);
+
+    }
     public void startApp(){
-        Thread engineThread = new Thread(engine);
-        Thread secondEngineThread = new Thread(secondEngine);
-        start.setStyle("-fx-background-color: #d79097; ");
-        border.setCenter(start);
-        start.setOnAction(action->{
-            engine.changeStatus();
-            secondEngine.changeStatus();
+        Thread engineThread = new Thread(engineRight);
+        Thread secondEngineThread = new Thread(engineLeft);
+        startButton.setStyle("-fx-background-color: #d79097; ");
+        border.setCenter(startButton);
+        startButton.setOnAction(action->{
+            engineRight.changeStatus();
+            engineLeft.changeStatus();
             engineThread.start();
             secondEngineThread.start();
+            addButtons();
         });
     }
 
     public void showMagic(){
         Platform.runLater(() ->{
-            Button magicButton = new Button("WOW! You get 5 magic animals!");
+            borderClear();
+            Button magicButton = new Button(" WOW! There are 5 more magical animals! ");
+            magicButton.setStyle("-fx-background-color: #d79097; ");
             border.setCenter(magicButton);
             magicButton.setOnAction(action ->{
-                engine.changeStatus();
-                secondEngine.changeStatus();
+                engineRight.changeStatus();
+                engineLeft.changeStatus();
+                addButtons();
             });
         });
     }
 
     public void changeStatus(){
-        engine.changeStatus();
-        secondEngine.changeStatus();
+        engineRight.changeStatus();
+        engineLeft.changeStatus();
     }
+
     public void showMap(){
         Platform.runLater(() ->{
             borderClear();
-            UpdateMap Map = null;
+            UpdateMap rightMap = null;
+            UpdateMap leftMap = null;
             try {
-                Map = new UpdateMap(engine);
+                rightMap = new UpdateMap(engineRight);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            UpdateMap secondMap = null;
             try {
-                secondMap = new UpdateMap(secondEngine);
+                leftMap = new UpdateMap(engineLeft);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
-            Label title = new Label("The mystery of the beginning of all things is unsolved, but you can try... ");
-            title.setStyle("-fx-font-weight: bold");
-            title.setFont(new Font(15));
-            gridPane = Map.getGridPane();
-            secondGridPane = secondMap.getGridPane();
-            stats = Map.getStats();
-            secondStats = secondMap.getStats();
-            VBox right = new VBox(gridPane, stats);
-            border.setRight(right);
-            VBox left =  new VBox(secondGridPane, secondStats);
+            gridPaneRight = rightMap.getGridPane();
+            gridPaneLeft = leftMap.getGridPane();
+            statsRight = rightMap.getStats();
+            statsLeft =leftMap.getStats();
+
+            VBox right = new VBox(gridPaneRight, statsRight);
+            VBox left =  new VBox(gridPaneLeft, statsLeft);
+
+            Chart chart = new Chart(engineRight.getStatistics(), engineLeft.getStatistics());
+            javafx.scene.chart.BarChart barChart = chart.getBarChart();
+
             border.setLeft(left);
-            border.setTop(title);
-            Button exitButton = new Button("EXIT");
-            HBox buttons = new HBox();
-            buttons.setSpacing(10);
-            buttons.getChildren().addAll(Start, exitButton);
-            border.setBottom(buttons);
-            buttons.setAlignment(Pos.CENTER);
-            //border.setAlignment(buttons, Pos.CENTER);
-            exitButton.setStyle("-fx-background-color: #d79097; ");
-            Start.setStyle("-fx-background-color: #d79097; ");
-            Start.setOnAction(action -> {
-                engine.changeStatus();
-                secondEngine.changeStatus();
-            });
-            exitButton.setOnAction(action ->{
-                stage.close();
-            });
-            BarChartMaps chart = new BarChartMaps(engine.getStatistics(), secondEngine.getStatistics());
-            BarChart barChart = chart.getBarChart();
+            border.setRight(right);
             border.setCenter(barChart);
+
+
             border.setAlignment(barChart,Pos.TOP_CENTER);
-            border.setAlignment(title, Pos.CENTER);
-            border.setMargin(title,new Insets(20,0,20,0));
             border.setMargin(left, new Insets(20,20,0,30));
             border.setMargin(right, new Insets(20,20,0,30));
-            border.setMargin(buttons, new Insets(10,0,10,0));
+
         });
     }
 
     private void borderClear(){
-        border.getChildren().clear();
+        border.setCenter(null);
+        border.setRight(null);
+        border.setLeft(null);
     }
 }
