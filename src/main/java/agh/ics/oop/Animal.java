@@ -3,7 +3,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Random;
 
-public class Animal implements IMapElement{
+public class Animal {
     private Vector2d position;
     private MapDirection orientation;
     private final AbstractWorldMap map;
@@ -31,7 +31,8 @@ public class Animal implements IMapElement{
     public int getNumberOfDays(){return numberOfDays;}
     public void addChild(){this.numberOfChildren += 1;}
     public int getNumberOfChildren(){return numberOfChildren;}
-    @Override
+
+
     public Vector2d getPosition() {
         return this.position;
     }

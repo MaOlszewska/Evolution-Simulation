@@ -14,8 +14,9 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
     protected int caloriesGrass;
     protected int height;
     protected int width;
+    protected boolean magic;
 
-    public AbstractWorldMap(int width, int height, float jungleRatio, int caloriesGrass ) {
+    public AbstractWorldMap(int width, int height, float jungleRatio, int caloriesGrass, boolean isMagic ) {
         this.lowerLeft = new Vector2d(0, 0);
         this.upperRight = new Vector2d(width - 1 , height - 1);
         this.lowerLeftJungle = jungleLowerLeft(width, height, jungleRatio);
@@ -23,7 +24,9 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         this.caloriesGrass = caloriesGrass;
         this.height = height;
         this.width = width;
+        this.magic = isMagic;
     }
+
     public int getHeight(){return this.height;}
     public int getWidth(){return this.width;}
     public abstract Vector2d selectPosition(Vector2d oldPosition, MapDirection orientation);

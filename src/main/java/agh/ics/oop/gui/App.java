@@ -16,6 +16,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.io.FileInputStream;
@@ -59,6 +60,8 @@ public class App extends Application {
         TextField n = new TextField("30");
         TextField s = new TextField("100");
         TextField e = new TextField("5");
+        TextField mL = new TextField("false");
+        TextField mR = new TextField("false");
 
         w.setMaxWidth(120);w.setStyle("-fx-background-color: #00ce8e; ");
         h.setMaxWidth(120);h.setStyle("-fx-background-color: #00ce8e; ");
@@ -67,11 +70,13 @@ public class App extends Application {
         n.setMaxWidth(120);n.setStyle("-fx-background-color: #00ce8e; ");
         s.setMaxWidth(120);s.setStyle("-fx-background-color: #00ce8e; ");
         e.setMaxWidth(120);e.setStyle("-fx-background-color: #00ce8e; ");
+        mL.setMaxWidth(120);e.setStyle("-fx-background-color: #00ce8e; ");
+        mR.setMaxWidth(120);e.setStyle("-fx-background-color: #00ce8e; ");
 
         Button getDate = new Button("CONFIRM");
 
         getDate.setStyle("-fx-background-color: #d79097; ");
-        listOfDate.getChildren().addAll(w,h,j,c,n,s,e, getDate);
+        listOfDate.getChildren().addAll(w,h,j,c,n,s,e,mL, mR, getDate);
         listOfDate.setSpacing(10);
 
 
@@ -82,12 +87,14 @@ public class App extends Application {
         Label N = new Label("Enter the number of Animal ");
         Label S = new Label("Enter the start energy " );
         Label E = new Label("Enter the energy to move ");
+        Label ML = new Label("Enter true if left map is magic  ");
+        Label MR = new Label("Enter true if right map is magic ");
 
         Label title = new Label("The mystery of the beginning of all things is unsolved, but you can try... ");
         title.setStyle("-fx-font-weight: bold");
         title.setFont(new Font(15));
         VBox list = new VBox();
-        list.getChildren().addAll(W,H, J, C, N, S, E);
+        list.getChildren().addAll(W,H, J, C, N, S, E, ML, MR);
         list.setSpacing(18);
         HBox lists = new HBox();
         lists.getChildren().addAll(list, listOfDate);
@@ -112,8 +119,10 @@ public class App extends Application {
             int numberOfAnimals = Integer.parseInt(n.getText());
             int startEnergy = Integer.parseInt(s.getText());
             int energyToMOve = Integer.parseInt(e.getText());
+            boolean magicLeft = Boolean.parseBoolean(mL.getText());
+            boolean magicRight = Boolean.parseBoolean(mR.getText());
             border.setCenter(start);
-            param = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve);
+            param = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
             engine = new Simulation(param ,this, "RIGHT" );
             secondEngine = new Simulation(param, this, "LEFT");
             startApp();
@@ -135,6 +144,21 @@ public class App extends Application {
         });
     }
 
+    public void showMagic(){
+        Platform.runLater(() ->{
+            Button magicButton = new Button("WOW! You get 5 magic animals!");
+            border.setCenter(magicButton);
+            magicButton.setOnAction(action ->{
+                engine.changeStatus();
+                secondEngine.changeStatus();
+            });
+        });
+    }
+
+    public void changeStatus(){
+        engine.changeStatus();
+        secondEngine.changeStatus();
+    }
     public void showMap(){
         Platform.runLater(() ->{
             borderClear();

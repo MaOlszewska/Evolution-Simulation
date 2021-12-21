@@ -8,8 +8,10 @@ public class GetParameters {
     private int numberOfAnimals;
     private int startEnergy;
     private int energyToMove;
+    private boolean magicLeft;
+    private boolean magicRight;
 
-    public GetParameters(int width, int height, float jungleRatio, int caloriesGrass, int numberOfAnimals, int startEnergy, int energyToMove){
+    public GetParameters(int width, int height, float jungleRatio, int caloriesGrass, int numberOfAnimals, int startEnergy, int energyToMove, boolean magicLeft, boolean magicRight){
         this.width = width;
         this.height = height;
         this.jungleRatio = jungleRatio;
@@ -17,6 +19,8 @@ public class GetParameters {
         this.numberOfAnimals = numberOfAnimals;
         this.startEnergy = startEnergy;
         this.energyToMove = energyToMove;
+        this.magicLeft = magicLeft;
+        this.magicRight = magicRight;
 }
     public int getEnergyToMove() {return energyToMove;}
 
@@ -43,4 +47,8 @@ public class GetParameters {
     public int getNumberOfAnimals() {
         return numberOfAnimals;
     }
+
+    public boolean getMagicLeft(){ return magicLeft;}
+
+    public boolean getMagicRight(){return magicRight;}
 }

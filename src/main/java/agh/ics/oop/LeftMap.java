@@ -4,8 +4,8 @@ import java.util.LinkedHashMap;
 
 public class LeftMap extends AbstractWorldMap{  // mapa z zawijaniem
 
-    public LeftMap( int width, int height,float jungleSize, int caloriesGrass) {
-        super(width, height, jungleSize, caloriesGrass);
+    public LeftMap( int width, int height,float jungleSize, int caloriesGrass, boolean magicLeft) {
+        super(width, height, jungleSize, caloriesGrass, magicLeft);
     }
 
     @Override

@@ -14,9 +14,9 @@ public class Statistics {
     private int avgChildren;
     private int dominantGenotype;
 
-    public Statistics(int startEnergy, int numberOfAnimals) {
+    public Statistics(int startEnergy, int numberOfAliveAnimals) {
         this.worldDays = 0;
-        this.numberOfAliveAnimals = numberOfAnimals;
+        this.numberOfAliveAnimals = numberOfAliveAnimals;
         this.numberOfGrass = 0;
         this.numberOfDeadAnimals = 0;
         this.avgEnergy = startEnergy;

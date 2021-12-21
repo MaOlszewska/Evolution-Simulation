@@ -5,8 +5,8 @@ import java.util.*;
 
 public class RightMap extends AbstractWorldMap{  // mapa z murem
 
-    public RightMap(int width, int height, float jungleRatio, int caloriesGrass) {
-        super(width,height,jungleRatio,caloriesGrass);
+    public RightMap(int width, int height, float jungleRatio, int caloriesGrass, boolean magicRight) {
+        super(width,height,jungleRatio,caloriesGrass, magicRight);
     }
 
     @Override

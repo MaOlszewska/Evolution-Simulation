@@ -14,10 +14,18 @@ public class Simulation implements Runnable{
     private int energyToMove;
     private App app;
     private Boolean run;
+    private boolean magic;
+    private int useMagic;
 
     public Simulation(GetParameters parameters, App applic, String TypeMap){
-        if(TypeMap == "RIGHT") this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass());
-        else this.map = new LeftMap(parameters.getWidth(),parameters.getHeight(), parameters.getJungleRatio(), parameters.getCaloriesGrass());
+        if(TypeMap == "RIGHT") {
+            this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass(), parameters.getMagicRight());
+            this.magic = parameters.getMagicRight();
+        }
+        else {
+            this.map = new LeftMap(parameters.getWidth(),parameters.getHeight(), parameters.getJungleRatio(), parameters.getCaloriesGrass(), parameters.getMagicLeft());
+            this.magic = parameters.getMagicLeft();
+        }
         this.parameters = parameters;
         this.animals = new ArrayList<>();
         this.grass = new ArrayList<>();
@@ -25,6 +33,8 @@ public class Simulation implements Runnable{
         this.statistics = new Statistics(parameters.getStartEnergy(), parameters.getNumberOfAnimals());
         this.app = applic;
         this.run = false;
+        this.useMagic = 0;
+
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
     public void changeStatus(){this.run = !this.run;}
@@ -68,14 +78,42 @@ public class Simulation implements Runnable{
     public void run(){
         while (animals.size() > 0) {
             try {
+                if(animals.size() == 5 && magic && useMagic < 3){
+                    app.changeStatus();
+                    placeMagicAnimals();
+                    useMagic += 1;
+                    app.showMagic();
+                }
                 day();
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 System.out.println(ex.toString());
             }
+
         }
     }
 
+    private void placeMagicAnimals() {
+        Vector2d position;
+        Random random = new Random();
+        int x;
+        int y;
+        for (int i = 0; i < 5; i++) {
+            if (map.isEmptyJungle() || map.isEmptySteppe()) {
+                do {
+                    x = random.nextInt(parameters.getWidth());
+                    y = random.nextInt(parameters.getHeight());
+                    position = new Vector2d(x, y);
+                }
+                while (map.isOccupied(position));
+                AnimalGenes genes = animals.get(i).getGenes();
+                Animal animal = new Animal(position, parameters.getStartEnergy(), map, genes);
+                animals.add(animal);
+                map.place(animal);
+                statistics.addOneLiveAnimal();
+            }
+        }
+    }
     private void plantTuft(){
         if(map.isEmptyJungle()){
             Grass tuft = map.plantTuftInJungle();
