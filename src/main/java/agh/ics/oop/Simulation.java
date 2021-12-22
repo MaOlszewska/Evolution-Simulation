@@ -22,7 +22,7 @@ public class Simulation implements Runnable{
 
 
     public Simulation(StartParameters parameters, App applic, boolean TypeMap, StatisticFile file){
-        if(TypeMap == true) {
+        if(TypeMap) {
             this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getEnergyGrass(), parameters.getMagicRight());
             this.magic = parameters.getMagicRight();
         }

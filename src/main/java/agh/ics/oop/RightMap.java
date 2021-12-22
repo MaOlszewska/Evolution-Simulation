@@ -6,6 +6,7 @@ public class RightMap extends AbstractWorldMap{  // map with brick wall
         super(width,height,jungleRatio,caloriesGrass, magicRight);
     }
 
+
     @Override
     public Vector2d selectPosition(Vector2d oldPosition, MapDirection orientation) {
         return oldPosition.add(orientation.toUnitVector());
