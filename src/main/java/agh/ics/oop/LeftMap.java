@@ -1,8 +1,7 @@
 package agh.ics.oop;
 
-import java.util.LinkedHashMap;
 
-public class LeftMap extends AbstractWorldMap{  // mapa z zawijaniem
+public class LeftMap extends AbstractWorldMap{  // folding Map
 
     public LeftMap( int width, int height,float jungleSize, int caloriesGrass, boolean magicLeft) {
         super(width, height, jungleSize, caloriesGrass, magicLeft);
@@ -30,13 +29,5 @@ public class LeftMap extends AbstractWorldMap{  // mapa z zawijaniem
     @Override
     public boolean canMoveTo(Vector2d position) {
         return true;
-    }
-
-
-    @Override
-    public void removeDeadAnimal(Animal animal) {
-        allAnimals.remove(animal);
-        removeAnimalFromPosition(animal, animal.getPosition());
-        animal.removeObserver(this);
     }
 }

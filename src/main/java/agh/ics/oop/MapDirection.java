@@ -1,6 +1,5 @@
 package agh.ics.oop;
 
-
 import java.util.Random;
 
 enum MapDirection {
@@ -26,18 +25,6 @@ enum MapDirection {
         };
     }
 
-    public MapDirection previous(){
-        return switch (this) {
-            case NORTH -> NORTHWEST;
-            case EAST -> NORTHEAST;
-            case SOUTH -> SOUTHEAST;
-            case WEST -> SOUTHWEST;
-            case NORTHEAST -> NORTH;
-            case SOUTHEAST -> EAST;
-            case SOUTHWEST -> SOUTH;
-            case NORTHWEST -> WEST;
-        };
-    }
     public Vector2d toUnitVector(){
         return switch (this) {
             case NORTH -> new Vector2d(0, 1);

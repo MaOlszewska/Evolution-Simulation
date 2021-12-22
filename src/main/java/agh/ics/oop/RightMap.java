@@ -1,9 +1,6 @@
 package agh.ics.oop;
 
-import java.lang.reflect.Array;
-import java.util.*;
-
-public class RightMap extends AbstractWorldMap{  // mapa z murem
+public class RightMap extends AbstractWorldMap{  // map with brick wall
 
     public RightMap(int width, int height, float jungleRatio, int caloriesGrass, boolean magicRight) {
         super(width,height,jungleRatio,caloriesGrass, magicRight);
@@ -19,12 +16,6 @@ public class RightMap extends AbstractWorldMap{  // mapa z murem
         return position.precedes(upperRight) && position.follows(lowerLeft);
     }
 
-    @Override
-    public void removeDeadAnimal(Animal animal) {
-        allAnimals.remove(animal);
-        removeAnimalFromPosition(animal, animal.getPosition());
-        animal.removeObserver(this);
-    }
 
 }
 

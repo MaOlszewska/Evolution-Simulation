@@ -169,4 +169,5 @@ public class Animal {
         for(int i = div + 1; i < 32; i++){newBornGenes[i] = firstAnimalGenes[i];}
         return newBornGenes;
     }
+
 }

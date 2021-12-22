@@ -139,8 +139,8 @@ public class App extends Application {
             boolean magicRight = Boolean.parseBoolean(mR.getText());
             border.setCenter(startButton);
             params = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
-            engineRight = new Simulation(params,this, "RIGHT", fileRight );
-            engineLeft = new Simulation(params, this, "LEFT", fileLeft);
+            engineRight = new Simulation(params,this, true, fileRight );
+            engineLeft = new Simulation(params, this, false, fileLeft);
             startApp();
 
         });

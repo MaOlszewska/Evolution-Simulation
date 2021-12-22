@@ -29,5 +29,5 @@ class AnimalGenes {
     }
 
     public int selectMovemnet(){
-        Random random = new Random();return genes[random.nextInt(32)];}
+        Random random = new Random(); return genes[random.nextInt(32)];}
 }

@@ -21,8 +21,8 @@ public class Simulation implements Runnable{
     private StatisticFile file;
 
 
-    public Simulation(GetParameters parameters, App applic, String TypeMap, StatisticFile file){
-        if(TypeMap == "RIGHT") {
+    public Simulation(GetParameters parameters, App applic, boolean TypeMap, StatisticFile file){
+        if(TypeMap == true) {
             this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass(), parameters.getMagicRight());
             this.magic = parameters.getMagicRight();
         }
@@ -43,7 +43,6 @@ public class Simulation implements Runnable{
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
     public void changeStatus(){this.run = !this.run;}
-    public ArrayList<Animal> getAnimals(){return this.animals;}
     public AbstractWorldMap getMap(){return this.map;}
     public GetParameters getParameters(){return this.parameters;}
     public ArrayList<Grass> getGrass() {return this.grass;}

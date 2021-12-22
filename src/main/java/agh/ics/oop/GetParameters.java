@@ -1,15 +1,15 @@
 package agh.ics.oop;
 
 public class GetParameters {
-    private int width;
-    private int height;
-    private float jungleRatio;
-    private int caloriesGrass;
-    private int numberOfAnimals;
-    private int startEnergy;
-    private int energyToMove;
-    private boolean magicLeft;
-    private boolean magicRight;
+    private final int width;
+    private final int height;
+    private final float jungleRatio;
+    private final int caloriesGrass;
+    private final int numberOfAnimals;
+    private final int startEnergy;
+    private final int energyToMove;
+    private final boolean magicLeft;
+    private final boolean magicRight;
 
     public GetParameters(int width, int height, float jungleRatio, int caloriesGrass, int numberOfAnimals, int startEnergy, int energyToMove, boolean magicLeft, boolean magicRight){
         this.width = width;

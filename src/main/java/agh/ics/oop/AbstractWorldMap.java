@@ -54,6 +54,13 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return allAnimals;
     }
 
+
+    public void removeDeadAnimal(Animal animal) {
+        allAnimals.remove(animal);
+        removeAnimalFromPosition(animal, animal.getPosition());
+        animal.removeObserver(this);
+    }
+
     @Override
     public void place(Animal animal) {
         allAnimals.add(animal);
@@ -110,14 +117,13 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return true;
     }
 
-    public Vector2d getLowerLeft(){return lowerLeft;}
-    public Vector2d getLowerLeftJungle(){return lowerLeftJungle;}
-    public Vector2d getUpperRight(){return upperRight;}
+    public void removeAnimalFromPosition(Animal animal, Vector2d oldPosition) {animals.get(oldPosition).remove(animal);}
     public Vector2d getUpperRightJungle(){return upperRightJungle;}
+    public Vector2d getLowerLeftJungle(){return lowerLeftJungle;}
 
-    public void removeEatenGrass(Grass tuft) {
-        grass.remove(tuft.getPosition(),tuft);
-    }
+    public Vector2d getUpperRight(){return upperRight;}
+
+    public void removeEatenGrass(Grass tuft) {grass.remove(tuft.getPosition(),tuft);}
 
     public LinkedList<Animal> hungryAnimalsInPosition(Vector2d position) {
         PriorityQueue<Animal> animalsOnPos = animals.get(position);
@@ -186,13 +192,6 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return grasses;
     }
 
-    public abstract void removeDeadAnimal(Animal animal);
-
-    public void removeAnimalFromPosition(Animal animal, Vector2d oldPosition) {
-        animals.get(oldPosition).remove(animal);
-    }
-
-
     public LinkedList<LinkedList<Animal>> findPair(float energyToMove) {
         LinkedList<LinkedList<Animal>> allPairToReproduce = new LinkedList<>();
         for (Vector2d position : animals.keySet()) {
@@ -210,7 +209,6 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
             }
         }
         return allPairToReproduce;
-
     }
 }
 
