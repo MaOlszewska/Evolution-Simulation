@@ -7,7 +7,6 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.*;
 import javafx.scene.text.Font;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
@@ -34,7 +33,6 @@ public class UpdateMap {
     public GridPane getGridPane(){ return this.gridPane;}
 
     public VBox getStats(){return this.stats;}
-
 
     private void updateMap() throws FileNotFoundException {
         gridPane.getChildren().clear();
@@ -77,18 +75,10 @@ public class UpdateMap {
         ImageView imageView  = new ImageView();
         for(Animal animal : animals){
             switch (animal.getImage()) {
-                case 4 :
-                    imageView = new ImageView(elephantImage);
-                    break;
-                case 3 :
-                    imageView = new ImageView(giraffeImage);
-                    break;
-                case 2 :
-                    imageView = new ImageView(catImage);
-                    break;
-                case 1 :
-                    imageView = new ImageView(mouseImage);
-                    break;
+                case 4 -> imageView = new ImageView(elephantImage);
+                case 3 -> imageView = new ImageView(giraffeImage);
+                case 2 -> imageView = new ImageView(catImage);
+                case 1 -> imageView = new ImageView(mouseImage);
             }
             imageView.setFitWidth(600 / (4 * engine.getMap().getWidth() ));
             imageView.setFitHeight(600 / (4 * engine.getMap().getWidth() ));
@@ -126,6 +116,4 @@ public class UpdateMap {
             }
         }
     }
-
-
 }

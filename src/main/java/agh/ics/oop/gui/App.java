@@ -15,25 +15,24 @@ import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.stage.Stage;
-
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
 
 public class App extends Application {
+    private BorderPane border = new BorderPane();
     private Simulation engineRight;
+    private Simulation engineLeft;
     private GridPane gridPaneRight;
     private GridPane gridPaneLeft;
-    private Simulation engineLeft;
-    private GetParameters params;
-    private BorderPane border = new BorderPane();
+    private StartParameters params;
     private VBox statsRight;
     private VBox statsLeft;
     private Button startButton = new Button("START");
+    private Button exitButton = new Button("EXIT");
     private Button buttonStartStopRight = new Button("START/STOP Right Map");
     private Button buttonStartStopLeft = new Button("START/STOP Left Map");
-    private Button exitButton = new Button("EXIT");
     private StatisticFile fileRight;
     private StatisticFile fileLeft;
     private Charts animalChart = new Charts("Animals");
@@ -44,14 +43,11 @@ public class App extends Application {
         primaryStage.setTitle("Evolution");
         primaryStage.setScene(new Scene(border, 1200,750));
         primaryStage.show();
+
         primaryStage.setOnCloseRequest(event -> {
             changeStatus();
             try {
                 fileRight.writeAveragedValues(engineRight.getStatistics());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
                 fileLeft.writeAveragedValues(engineLeft.getStatistics());
             } catch (IOException e) {
                 e.printStackTrace();
@@ -71,78 +67,79 @@ public class App extends Application {
     @Override
     public void init() throws IOException {
         initBorder();
-        VBox listOfDate = new VBox();
-        TextField w = new TextField("10");
-        TextField h = new TextField("10");
-        TextField j = new TextField("0.5");
-        TextField c = new TextField("50");
-        TextField n = new TextField("30");
-        TextField s = new TextField("100");
-        TextField e = new TextField("5");
-        TextField mL = new TextField("false");
-        TextField mR = new TextField("false");
         fileRight = new StatisticFile("src/main/resources/rightMapFile.txt");
         fileLeft = new StatisticFile("src/main/resources/leftMapFile.txt");
-        w.setMaxWidth(120);w.setStyle("-fx-background-color: #00ce8e; ");
-        h.setMaxWidth(120);h.setStyle("-fx-background-color: #00ce8e; ");
-        j.setMaxWidth(120);j.setStyle("-fx-background-color: #00ce8e; ");
-        c.setMaxWidth(120);c.setStyle("-fx-background-color: #00ce8e; ");
-        n.setMaxWidth(120);n.setStyle("-fx-background-color: #00ce8e; ");
-        s.setMaxWidth(120);s.setStyle("-fx-background-color: #00ce8e; ");
-        e.setMaxWidth(120);e.setStyle("-fx-background-color: #00ce8e; ");
-        mL.setMaxWidth(120);mL.setStyle("-fx-background-color: #00ce8e; ");
-        mR.setMaxWidth(120);mR.setStyle("-fx-background-color: #00ce8e; ");
+        VBox listOfTextField = new VBox();
+        TextField widthField = new TextField("10");
+        TextField heightField = new TextField("10");
+        TextField jungleRatioField = new TextField("0.5");
+        TextField energyGrassField = new TextField("50");
+        TextField numberOfAnimalsField = new TextField("30");
+        TextField startEnergyField = new TextField("100");
+        TextField energyToMoveField = new TextField("5");
+        TextField magicLeftField = new TextField("false");
+        TextField magicRightField = new TextField("false");
+        widthField.setMaxWidth(120);widthField.setStyle("-fx-background-color: #00ce8e; ");
+        heightField.setMaxWidth(120);heightField.setStyle("-fx-background-color: #00ce8e; ");
+        jungleRatioField.setMaxWidth(120);jungleRatioField.setStyle("-fx-background-color: #00ce8e; ");
+        energyGrassField.setMaxWidth(120);energyGrassField.setStyle("-fx-background-color: #00ce8e; ");
+        numberOfAnimalsField.setMaxWidth(120);numberOfAnimalsField.setStyle("-fx-background-color: #00ce8e; ");
+        startEnergyField.setMaxWidth(120);startEnergyField.setStyle("-fx-background-color: #00ce8e; ");
+        energyToMoveField.setMaxWidth(120);energyToMoveField.setStyle("-fx-background-color: #00ce8e; ");
+        magicLeftField.setMaxWidth(120);magicLeftField.setStyle("-fx-background-color: #00ce8e; ");
+        magicRightField.setMaxWidth(120);magicRightField.setStyle("-fx-background-color: #00ce8e; ");
 
         Button getDate = new Button("CONFIRM");
 
         getDate.setStyle("-fx-background-color: #d79097; ");
-        listOfDate.getChildren().addAll(w,h,j,c,n,s,e,mL, mR, getDate);
-        listOfDate.setSpacing(10);
+        listOfTextField.getChildren().addAll(widthField, heightField, jungleRatioField, energyGrassField, numberOfAnimalsField,
+                startEnergyField, energyToMoveField, magicLeftField, magicRightField, getDate);
+        listOfTextField.setSpacing(10);
 
+        Label widthLabel = new Label("Enter the height of the map ");
+        Label heightLabel = new Label("Enter the width of the map ");
+        Label jungleRatioLabel = new Label("Enter the Jungle Ratio  ");
+        Label energyGrassLabel = new Label("Enter the energy of eating grass  ");
+        Label numberOfAnimalsLabel = new Label("Enter the number of Animal ");
+        Label startEnergyLabel = new Label("Enter the start energy " );
+        Label energyToMoveLabel = new Label("Enter the energy to move ");
+        Label magicLeftLabel = new Label("Enter true if left map is magic  ");
+        Label magicRightLabel = new Label("Enter true if right map is magic ");
 
-        Label H = new Label("Enter the width of the map ");
-        Label W = new Label("Enter the height of the map ");
-        Label J = new Label("Enter the Jungle Ratio  ");
-        Label C = new Label("Enter the energy of eating grass  ");
-        Label N = new Label("Enter the number of Animal ");
-        Label S = new Label("Enter the start energy " );
-        Label E = new Label("Enter the energy to move ");
-        Label ML = new Label("Enter true if left map is magic  ");
-        Label MR = new Label("Enter true if right map is magic ");
+        VBox listOfLabel = new VBox();
+        listOfLabel.getChildren().addAll(widthLabel, heightLabel, jungleRatioLabel, energyGrassLabel, numberOfAnimalsLabel,
+                startEnergyLabel, energyToMoveLabel, magicLeftLabel, magicRightLabel);
+        listOfLabel.setSpacing(18);
 
+        HBox inputList = new HBox();
+        inputList.getChildren().addAll(listOfLabel, listOfTextField);
+        inputList.setAlignment(Pos.TOP_CENTER);
 
-        VBox list = new VBox();
-        list.getChildren().addAll(W,H, J, C, N, S, E, ML, MR);
-        list.setSpacing(18);
-        HBox lists = new HBox();
-        lists.getChildren().addAll(list, listOfDate);
-        lists.setAlignment(Pos.TOP_CENTER);
-        Image worldIamge = new Image(new FileInputStream("src/main/resources/world.png"));
-        ImageView imageView = new ImageView(worldIamge);
-        border.setAlignment(imageView, Pos.TOP_CENTER);
+        Image worldImage = new Image(new FileInputStream("src/main/resources/world.png"));
+        ImageView imageView = new ImageView(worldImage);
         imageView.setFitWidth(300);
         imageView.setFitHeight(300);
+        border.setAlignment(imageView, Pos.TOP_CENTER);
         border.setBottom(imageView);
-        border.setCenter(lists);
-
+        border.setCenter(inputList);
         border.setBackground(new Background(new BackgroundFill(Color.PALETURQUOISE, CornerRadii.EMPTY, Insets.EMPTY)));
+
         getDate.setOnAction(actionEvent -> {
             borderClear();
-            int width = Integer.parseInt(w.getText());
-            int height = Integer.parseInt(h.getText());
-            float jungleRatio = Float.parseFloat(j.getText());
-            int caloriesGrass = Integer.parseInt(c.getText());
-            int numberOfAnimals = Integer.parseInt(n.getText());
-            int startEnergy = Integer.parseInt(s.getText());
-            int energyToMOve = Integer.parseInt(e.getText());
-            boolean magicLeft = Boolean.parseBoolean(mL.getText());
-            boolean magicRight = Boolean.parseBoolean(mR.getText());
+            int width = Integer.parseInt(widthField.getText());
+            int height = Integer.parseInt(heightField.getText());
+            float jungleRatio = Float.parseFloat(jungleRatioField.getText());
+            int caloriesGrass = Integer.parseInt(energyGrassField.getText());
+            int numberOfAnimals = Integer.parseInt(numberOfAnimalsField.getText());
+            int startEnergy = Integer.parseInt(startEnergyField.getText());
+            int energyToMOve = Integer.parseInt(energyToMoveField.getText());
+            boolean magicLeft = Boolean.parseBoolean(magicLeftField.getText());
+            boolean magicRight = Boolean.parseBoolean(magicRightField.getText());
             border.setCenter(startButton);
-            params = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
+            params = new StartParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
             engineRight = new Simulation(params,this, true, fileRight );
             engineLeft = new Simulation(params, this, false, fileLeft);
             startApp();
-
         });
     }
 
@@ -156,15 +153,12 @@ public class App extends Application {
             Platform.exit();
             try {
                 fileRight.writeAveragedValues(engineRight.getStatistics());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            try {
                 fileLeft.writeAveragedValues(engineLeft.getStatistics());
             } catch (IOException e) {
                 e.printStackTrace();
             }
         });
+
 
         buttonStartStopRight.setOnAction(action -> {
             engineRight.changeStatus();
@@ -174,16 +168,16 @@ public class App extends Application {
             engineLeft.changeStatus();
         });
 
+        border.setBottom(buttons);
         buttons.getChildren().addAll(buttonStartStopLeft, exitButton, buttonStartStopRight);
         buttons.setAlignment(Pos.CENTER);
         border.setAlignment(buttons, Pos.CENTER);
+        border.setMargin(buttons, new Insets(10,0,10,0));
         exitButton.setStyle("-fx-background-color: #d79097; ");
         buttonStartStopLeft.setStyle("-fx-background-color: #d79097; ");
         buttonStartStopRight.setStyle("-fx-background-color: #d79097; ");
-        border.setMargin(buttons, new Insets(10,0,10,0));
-        border.setBottom(buttons);
-
     }
+
     public void startApp(){
         Thread engineThread = new Thread(engineRight);
         Thread secondEngineThread = new Thread(engineLeft);
@@ -198,7 +192,7 @@ public class App extends Application {
         });
     }
 
-    public void showMagic(){
+    public void addMagicAnimals(){
         Platform.runLater(() ->{
             borderClear();
             Button magicButton = new Button(" WOW! There are 5 more magical animals! ");
@@ -259,5 +253,4 @@ public class App extends Application {
         border.setRight(null);
         border.setLeft(null);
     }
-
 }

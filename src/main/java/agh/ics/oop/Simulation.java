@@ -9,7 +9,7 @@ import java.util.Random;
 
 public class Simulation implements Runnable{
     private final AbstractWorldMap map;
-    private final GetParameters parameters;
+    private final StartParameters parameters;
     private ArrayList<Animal> animals;
     private ArrayList<Grass> grass;
     private Statistics statistics;
@@ -21,13 +21,13 @@ public class Simulation implements Runnable{
     private StatisticFile file;
 
 
-    public Simulation(GetParameters parameters, App applic, boolean TypeMap, StatisticFile file){
+    public Simulation(StartParameters parameters, App applic, boolean TypeMap, StatisticFile file){
         if(TypeMap == true) {
-            this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass(), parameters.getMagicRight());
+            this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getEnergyGrass(), parameters.getMagicRight());
             this.magic = parameters.getMagicRight();
         }
         else {
-            this.map = new LeftMap(parameters.getWidth(),parameters.getHeight(), parameters.getJungleRatio(), parameters.getCaloriesGrass(), parameters.getMagicLeft());
+            this.map = new LeftMap(parameters.getWidth(),parameters.getHeight(), parameters.getJungleRatio(), parameters.getEnergyGrass(), parameters.getMagicLeft());
             this.magic = parameters.getMagicLeft();
         }
         this.parameters = parameters;
@@ -42,11 +42,6 @@ public class Simulation implements Runnable{
 
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
-    public void changeStatus(){this.run = !this.run;}
-    public AbstractWorldMap getMap(){return this.map;}
-    public GetParameters getParameters(){return this.parameters;}
-    public ArrayList<Grass> getGrass() {return this.grass;}
-    public Statistics getStatistics(){return this.statistics;}
 
     private void placeAnimalsFirstTime(int animalNumber){  //place the first animals in random places on the map
         Vector2d position;
@@ -67,6 +62,31 @@ public class Simulation implements Runnable{
         }
     }
 
+    public void changeStatus(){this.run = !this.run;}
+    public AbstractWorldMap getMap(){return this.map;}
+    public StartParameters getParameters(){return this.parameters;}
+    public ArrayList<Grass> getGrass() {return this.grass;}
+    public Statistics getStatistics(){return this.statistics;}
+
+    public void run(){
+        while (true) {
+            try {
+                if(animals.size() == 5 && magic && useMagic < 3){
+                    app.changeStatus();
+                    placeMagicAnimals();
+                    useMagic += 1;
+                    app.addMagicAnimals();
+                }
+                day();
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                System.out.println(ex.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void day() throws IOException {
         if(run) {
             removeDeadAnimals();
@@ -77,61 +97,6 @@ public class Simulation implements Runnable{
             app.showMap();
             statistics.addOneDay();
             file.writeDataInFileMap(statistics);
-        }
-    }
-
-    public void run(){
-        while (true) {
-            try {
-                if(animals.size() == 5 && magic && useMagic < 3){
-                    app.changeStatus();
-                    placeMagicAnimals();
-                    useMagic += 1;
-                    app.showMagic();
-                }
-                day();
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                System.out.println(ex.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-        }
-
-    }
-
-    private void placeMagicAnimals() {
-        Vector2d position;
-        Random random = new Random();
-        int x;
-        int y;
-        for (int i = 0; i < 5; i++) {
-            if (map.isEmptyJungle() || map.isEmptySteppe()) {
-                do {
-                    x = random.nextInt(parameters.getWidth());
-                    y = random.nextInt(parameters.getHeight());
-                    position = new Vector2d(x, y);
-                }
-                while (map.isOccupied(position));
-                AnimalGenes genes = animals.get(i).getGenes();
-                Animal animal = new Animal(position, parameters.getStartEnergy(), map, genes);
-                animals.add(animal);
-                map.place(animal);
-                statistics.addOneLiveAnimal();
-            }
-        }
-    }
-    private void plantTuft(){
-        if(map.isEmptyJungle()){
-            Grass tuft = map.plantTuftInJungle();
-            grass.add(tuft);
-            statistics.addOneGrass();
-        }
-        if(map.isEmptySteppe()){
-            Grass tuft = map.plantTuftInSteppe();
-            grass.add(tuft);
-            statistics.addOneGrass();
         }
     }
 
@@ -159,7 +124,7 @@ public class Simulation implements Runnable{
         for(Animal animal : animals){
             animal.addOneDay();
             int movement = animal.selectMovement();
-            animal.move(movement, energyToMove);
+            animal.move(movement);
             animal.substractEnergy(energyToMove);
             sumEnergy += animal.getEnergy();
         }
@@ -168,10 +133,9 @@ public class Simulation implements Runnable{
 
     // if there is more than one animal i one field, the strongest animal recevie all energy but if there are several animals
     // that have the same amount of energy, taht energy is shared between them
-
     private void consumptionGrass() {
         LinkedList<Grass> grassToRemove = new LinkedList<>();
-        int calories = parameters.getCaloriesGrass();
+        int calories = parameters.getEnergyGrass();
         for (Grass tuft : grass) {
             LinkedList<Animal> animalsOnPosition = map.hungryAnimalsInPosition(tuft.getPosition());
             if (animalsOnPosition != null) {
@@ -197,5 +161,40 @@ public class Simulation implements Runnable{
             statistics.addOneLiveAnimal();
         }
         statistics.findDominantGenotype(animals);
+    }
+
+    private void plantTuft(){
+        if(map.isEmptyJungle()){
+            Grass tuft = map.plantTuftInJungle();
+            grass.add(tuft);
+            statistics.addOneGrass();
+        }
+        if(map.isEmptySteppe()){
+            Grass tuft = map.plantTuftInSteppe();
+            grass.add(tuft);
+            statistics.addOneGrass();
+        }
+    }
+
+    private void placeMagicAnimals() {
+        Vector2d position;
+        Random random = new Random();
+        int x;
+        int y;
+        for (int i = 0; i < 5; i++) {
+            if (map.isEmptyJungle() || map.isEmptySteppe()) {
+                do {
+                    x = random.nextInt(parameters.getWidth());
+                    y = random.nextInt(parameters.getHeight());
+                    position = new Vector2d(x, y);
+                }
+                while (map.isOccupied(position));
+                AnimalGenes genes = animals.get(i).getGenes();
+                Animal animal = new Animal(position, parameters.getStartEnergy(), map, genes);
+                animals.add(animal);
+                map.place(animal);
+                statistics.addOneLiveAnimal();
+            }
+        }
     }
 }

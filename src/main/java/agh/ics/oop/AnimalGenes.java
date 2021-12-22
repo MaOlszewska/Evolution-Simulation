@@ -28,6 +28,6 @@ class AnimalGenes {
         Arrays.sort(genes);
     }
 
-    public int selectMovemnet(){
+    public int selectMovement(){
         Random random = new Random(); return genes[random.nextInt(32)];}
 }

@@ -27,21 +27,19 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         this.magic = isMagic;
     }
 
-    public int getHeight(){return this.height;}
-    public int getWidth(){return this.width;}
+    public abstract boolean canMoveTo(Vector2d position);
+
     public abstract Vector2d selectPosition(Vector2d oldPosition, MapDirection orientation);
 
-    public void positionChanged(Animal animal,Vector2d oldPosition, Vector2d newPosition) {
-        removeAnimalFromPosition(animal, oldPosition);
-        addAnimalAtPosition(animal,newPosition);
-    }
+    public int getHeight(){return this.height;}
 
-    public void addAnimalAtPosition(Animal animal, Vector2d position){
-        PriorityQueue<Animal> animalsOnPos = animals.get(position);
-        if (animalsOnPos == null) {
-            addPriorityAnimal(animal, animal.getPosition());}
-        else {animalsOnPos.add(animal);}
-    }
+    public int getWidth(){return this.width;}
+
+    public Vector2d getUpperRightJungle(){return upperRightJungle;}
+
+    public Vector2d getLowerLeftJungle(){return lowerLeftJungle;}
+
+    public Vector2d getUpperRight(){return upperRight;}
 
     public ArrayList getAnimals() {
         ArrayList allAnimals = new ArrayList();
@@ -54,6 +52,10 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return allAnimals;
     }
 
+    public void positionChanged(Animal animal,Vector2d oldPosition, Vector2d newPosition) {
+        removeAnimalFromPosition(animal, oldPosition);
+        addAnimalAtPosition(animal,newPosition);
+    }
 
     public void removeDeadAnimal(Animal animal) {
         allAnimals.remove(animal);
@@ -61,11 +63,11 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         animal.removeObserver(this);
     }
 
-    @Override
-    public void place(Animal animal) {
-        allAnimals.add(animal);
-        animal.addObserver(this);
-        addPriorityAnimal(animal, animal.getPosition());
+    public void addAnimalAtPosition(Animal animal, Vector2d position){
+        PriorityQueue<Animal> animalsOnPos = animals.get(position);
+        if (animalsOnPos == null) {
+            addPriorityAnimal(animal, animal.getPosition());}
+        else {animalsOnPos.add(animal);}
     }
 
     public void addPriorityAnimal(Animal animal, Vector2d position) {
@@ -79,7 +81,20 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         }
     }
 
-    public abstract boolean canMoveTo(Vector2d position);
+
+    @Override
+    public void place(Animal animal) {
+        allAnimals.add(animal);
+        animal.addObserver(this);
+        addPriorityAnimal(animal, animal.getPosition());
+    }
+
+    @Override
+    public boolean isOccupied(Vector2d position) {
+        if ((animals.get(position) == null
+                || (animals.get(position).isEmpty())) && grass.get(position) == null) return false;
+        return true;
+    }
 
     @Override
     public Object objectAt(Vector2d position) {
@@ -111,35 +126,9 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return new Vector2d(jungleX + jungleSizeX, jungleY + jungleSizeX);
     }
 
-    public boolean isOccupied(Vector2d position) {
-        if ((animals.get(position) == null
-                || (animals.get(position).isEmpty())) && grass.get(position) == null) return false;
-        return true;
-    }
-
     public void removeAnimalFromPosition(Animal animal, Vector2d oldPosition) {animals.get(oldPosition).remove(animal);}
-    public Vector2d getUpperRightJungle(){return upperRightJungle;}
-    public Vector2d getLowerLeftJungle(){return lowerLeftJungle;}
-
-    public Vector2d getUpperRight(){return upperRight;}
 
     public void removeEatenGrass(Grass tuft) {grass.remove(tuft.getPosition(),tuft);}
-
-    public LinkedList<Animal> hungryAnimalsInPosition(Vector2d position) {
-        PriorityQueue<Animal> animalsOnPos = animals.get(position);
-        if (animalsOnPos != null && !animalsOnPos.isEmpty()){
-            LinkedList<Animal> toFeed = new LinkedList<>();
-            Animal first = animalsOnPos.poll();
-            toFeed.add(first);
-
-            while (animalsOnPos.peek() != null && animalsOnPos.peek().getEnergy() == first.getEnergy()){
-                toFeed.add(animalsOnPos.poll());
-            }
-            animalsOnPos.addAll(toFeed);
-            return toFeed;
-        }
-        else return null;
-    }
 
     public boolean isEmptyJungle() {
         for(int i = lowerLeftJungle.x; i <= upperRightJungle.x; i++ ) {
@@ -209,6 +198,22 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
             }
         }
         return allPairToReproduce;
+    }
+
+    public LinkedList<Animal> hungryAnimalsInPosition(Vector2d position) {
+        PriorityQueue<Animal> animalsOnPos = animals.get(position);
+        if (animalsOnPos != null && !animalsOnPos.isEmpty()){
+            LinkedList<Animal> toFeed = new LinkedList<>();
+            Animal first = animalsOnPos.poll();
+            toFeed.add(first);
+
+            while (animalsOnPos.peek() != null && animalsOnPos.peek().getEnergy() == first.getEnergy()){
+                toFeed.add(animalsOnPos.poll());
+            }
+            animalsOnPos.addAll(toFeed);
+            return toFeed;
+        }
+        else return null;
     }
 }
 

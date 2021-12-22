@@ -1,7 +1,6 @@
 package agh.ics.oop;
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 
 public class Statistics {
     private int numberOfAliveAnimals;
@@ -35,16 +34,21 @@ public class Statistics {
     public int getDominantGenotype(){return this.dominantGenotype;}
 
     public void addOneDay(){this.worldDays += 1;}
+
     public void addOneLiveAnimal(){this.numberOfAliveAnimals += 1;}
+
     public void addOneDeadAnimal(){
         this.numberOfDeadAnimals += 1;
         this.numberOfAliveAnimals -= 1;
     }
     public void addDaysDeadAnimal(int days){this.sumOfDaysDeadAnimals += days;}
+
     public void addOneGrass(){this.numberOfGrass += 1;}
+
     public void substractOneGrass(){this.numberOfGrass -= 1;}
 
     public void counterOfAvgEnergy(int energy){if(numberOfAliveAnimals != 0)this.avgEnergy = energy / this.numberOfAliveAnimals;}
+    
     public void counterAvgChildrenOfAliveAnimals(ArrayList<Animal> animals){
         int numberOfChildren = 0;
         if(animals.size() == 0){this.avgChildren = 0;}
@@ -57,10 +61,12 @@ public class Statistics {
             this.avgChildren =  numberOfChildren / animals.size();
         }
     }
+
     public void counterOfAvgLifeDaysDeadAnimals(){
         if(numberOfDeadAnimals != 0) {
-            this.avgLifeDaysOfDeadAnimal =  this.sumOfDaysDeadAnimals/this.numberOfDeadAnimals;}
+            this.avgLifeDaysOfDeadAnimal =  this.sumOfDaysDeadAnimals / this.numberOfDeadAnimals;}
     }
+
     public void findDominantGenotype(ArrayList<Animal> animals){
         int[] counter = new int[8];
         for(Animal animal : animals){
@@ -75,10 +81,6 @@ public class Statistics {
             }
         }
         this.dominantGenotype = dominant;
-    }
-
-    public int getMax(){
-        return Math.max(Math.max(numberOfAliveAnimals, numberOfDeadAnimals),Math.max(avgEnergy, numberOfGrass));
     }
 }
 
