@@ -31,10 +31,13 @@ public class App extends Application {
     private VBox statsRight;
     private VBox statsLeft;
     private Button startButton = new Button("START");
-    private Button buttonStartStop = new Button("START/STOP");
+    private Button buttonStartStopRight = new Button("START/STOP Right Map");
+    private Button buttonStartStopLeft = new Button("START/STOP Left Map");
     private Button exitButton = new Button("EXIT");
     private StatisticFile fileRight;
     private StatisticFile fileLeft;
+    private Charts animalChart = new Charts("Animals");
+    private Charts grassChart = new Charts("Grass");
 
 
     public void start(Stage primaryStage) throws Exception {
@@ -146,7 +149,7 @@ public class App extends Application {
 
     private void addButtons(){
         HBox buttons = new HBox();
-        buttons.setSpacing(20);
+        buttons.setSpacing(300);
 
         exitButton.setOnAction(action ->{
             changeStatus();
@@ -163,16 +166,20 @@ public class App extends Application {
             }
         });
 
-        buttonStartStop.setOnAction(action -> {
+        buttonStartStopRight.setOnAction(action -> {
             engineRight.changeStatus();
+        });
+
+        buttonStartStopLeft.setOnAction(action -> {
             engineLeft.changeStatus();
         });
 
-        buttons.getChildren().addAll(buttonStartStop, exitButton);
+        buttons.getChildren().addAll(buttonStartStopLeft, exitButton, buttonStartStopRight);
         buttons.setAlignment(Pos.CENTER);
         border.setAlignment(buttons, Pos.CENTER);
         exitButton.setStyle("-fx-background-color: #d79097; ");
-        buttonStartStop.setStyle("-fx-background-color: #d79097; ");
+        buttonStartStopLeft.setStyle("-fx-background-color: #d79097; ");
+        buttonStartStopRight.setStyle("-fx-background-color: #d79097; ");
         border.setMargin(buttons, new Insets(10,0,10,0));
         border.setBottom(buttons);
 
@@ -233,15 +240,14 @@ public class App extends Application {
             VBox right = new VBox(gridPaneRight, statsRight);
             VBox left =  new VBox(gridPaneLeft, statsLeft);
 
-            Chart chart = new Chart(engineRight.getStatistics(), engineLeft.getStatistics());
-            javafx.scene.chart.BarChart barChart = chart.getBarChart();
+            grassChart.updateGrassChart(engineRight.getStatistics(), engineLeft.getStatistics());
+            animalChart.updateAnimalsChart(engineRight.getStatistics(), engineLeft.getStatistics());
+            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart());
 
             border.setLeft(left);
             border.setRight(right);
-            border.setCenter(barChart);
+            border.setCenter(charts);
 
-
-            border.setAlignment(barChart,Pos.TOP_CENTER);
             border.setMargin(left, new Insets(20,20,0,30));
             border.setMargin(right, new Insets(20,20,0,30));
 

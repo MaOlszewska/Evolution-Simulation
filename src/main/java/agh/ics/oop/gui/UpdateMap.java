@@ -23,15 +23,16 @@ public class UpdateMap {
         this.gridPane = new GridPane();
         this.stats = updateStatistic();
         for (int i = 0; i < engine.getParameters().getWidth(); i++){
-            this.gridPane.getColumnConstraints().add(new ColumnConstraints(1200/ (3*engine.getMap().getWidth() )));
+            this.gridPane.getColumnConstraints().add(new ColumnConstraints(1200/ (3 * engine.getMap().getWidth() )));
         }
         for (int i = 0; i < engine.getParameters().getHeight(); i++){
-            this.gridPane.getRowConstraints().add(new RowConstraints(700 / (2*engine.getMap().getHeight()) ));
+            this.gridPane.getRowConstraints().add(new RowConstraints(700 / (2 * engine.getMap().getHeight()) ));
         }
         updateMap();
     }
 
     public GridPane getGridPane(){ return this.gridPane;}
+
     public VBox getStats(){return this.stats;}
 
 
@@ -44,8 +45,7 @@ public class UpdateMap {
 
     private VBox updateStatistic(){
         Statistics statistics = engine.getStatistics();
-        Label title = new Label("SIMULATION STATISTIC");
-        title.setFont(new Font(15));
+        Label title = new Label("STATISTIC");
         Label worldDays = new Label("World days: " + statistics.getWorldDays());
         Label numberOfAliveAnimals = new Label("Number of alive Animals: " + statistics.getNumberOfAliveAnimals());
         Label numberOfGrass = new Label("Number of Grass: " + statistics.getNumberOfGrass());
@@ -59,6 +59,8 @@ public class UpdateMap {
         stats.getChildren().addAll(title,worldDays, numberOfAliveAnimals, numberOfGrass, numberOfDeadAnimals, avgEnergy, avgLifeDaysDeadAnimal, avgChildren, dominantGentype);
         stats.setAlignment(Pos.TOP_CENTER);
         stats.setSpacing(10);
+        title.setFont(new Font(15));
+        title.setStyle("-fx-font-weight: bold");
         return stats;
     }
 
@@ -69,9 +71,9 @@ public class UpdateMap {
         Image catImage = new Image(new FileInputStream("src/main/resources/cat.png"));
         Image mouseImage = new Image(new FileInputStream("src/main/resources/mouse.png"));
 
-        IWorldMap map = engine.getMap();
-        AbstractWorldMap abstractMap = (AbstractWorldMap) map;
-        ArrayList<Animal> animals = abstractMap.getAnimals();
+        AbstractWorldMap map = engine.getMap();
+
+        ArrayList<Animal> animals = map.getAnimals();
         ImageView imageView  = new ImageView();
         for(Animal animal : animals){
             switch (animal.getImage()) {
@@ -88,8 +90,8 @@ public class UpdateMap {
                     imageView = new ImageView(mouseImage);
                     break;
             }
-            imageView.setFitWidth(600 / (4*engine.getMap().getWidth() ));
-            imageView.setFitHeight(600 / (4*engine.getMap().getWidth() ));
+            imageView.setFitWidth(600 / (4 * engine.getMap().getWidth() ));
+            imageView.setFitHeight(600 / (4 * engine.getMap().getWidth() ));
             gridPane.add(imageView, animal.getPosition().x, animal.getPosition().y);
             gridPane.setAlignment(Pos.CENTER);
         }
@@ -97,20 +99,18 @@ public class UpdateMap {
         ArrayList<Grass> grass = engine.getGrass();
         for(Grass gras : grass){
             imageView = new ImageView(grassImage);
-            imageView.setFitWidth(600 / (4*engine.getMap().getWidth() ));
-            imageView.setFitHeight(600 / (4*engine.getMap().getWidth() ));
+            imageView.setFitWidth(600 / (4 * engine.getMap().getWidth() ));
+            imageView.setFitHeight(600 / (4 * engine.getMap().getWidth() ));
             gridPane.add(imageView, gras.getPosition().x,gras.getPosition().y);
             gridPane.setAlignment(Pos.CENTER);
         }
     }
 
     private void coloringMap(){
-        IWorldMap map = engine.getMap();
-        AbstractWorldMap abstractMap = (AbstractWorldMap) map;
-        Vector2d lowerLeft = abstractMap.getLowerLeft();
-        Vector2d upperRight = abstractMap.getUpperRight();
-        Vector2d lowerLeftJungle = abstractMap.getLowerLeftJungle() ;
-        Vector2d upperRightJungle = abstractMap.getUpperRightJungle();
+        AbstractWorldMap map = engine.getMap();
+        Vector2d upperRight = map.getUpperRight();
+        Vector2d lowerLeftJungle = map.getLowerLeftJungle() ;
+        Vector2d upperRightJungle = map.getUpperRightJungle();
 
         for(int i = 0; i <= upperRight.x; i++ ) {
             for (int j = 0; j <= upperRight.y; j++) {
