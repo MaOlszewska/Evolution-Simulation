@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 
 
 public class App extends Application {
@@ -32,12 +33,27 @@ public class App extends Application {
     private Button startButton = new Button("START");
     private Button buttonStartStop = new Button("START/STOP");
     private Button exitButton = new Button("EXIT");
+    private StatisticFile fileRight;
+    private StatisticFile fileLeft;
 
 
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Evolution");
         primaryStage.setScene(new Scene(border, 1200,750));
         primaryStage.show();
+        primaryStage.setOnCloseRequest(event -> {
+            changeStatus();
+            try {
+                fileRight.writeAveragedValues(engineRight.getStatistics());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                fileLeft.writeAveragedValues(engineLeft.getStatistics());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
     }
 
     private void initBorder(){
@@ -50,7 +66,7 @@ public class App extends Application {
     }
 
     @Override
-    public void init() throws FileNotFoundException {
+    public void init() throws IOException {
         initBorder();
         VBox listOfDate = new VBox();
         TextField w = new TextField("10");
@@ -62,7 +78,8 @@ public class App extends Application {
         TextField e = new TextField("5");
         TextField mL = new TextField("false");
         TextField mR = new TextField("false");
-
+        fileRight = new StatisticFile("src/main/resources/rightMapFile.txt");
+        fileLeft = new StatisticFile("src/main/resources/leftMapFile.txt");
         w.setMaxWidth(120);w.setStyle("-fx-background-color: #00ce8e; ");
         h.setMaxWidth(120);h.setStyle("-fx-background-color: #00ce8e; ");
         j.setMaxWidth(120);j.setStyle("-fx-background-color: #00ce8e; ");
@@ -119,8 +136,8 @@ public class App extends Application {
             boolean magicRight = Boolean.parseBoolean(mR.getText());
             border.setCenter(startButton);
             params = new GetParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
-            engineRight = new Simulation(params,this, "RIGHT" );
-            engineLeft = new Simulation(params, this, "LEFT");
+            engineRight = new Simulation(params,this, "RIGHT", fileRight );
+            engineLeft = new Simulation(params, this, "LEFT", fileLeft);
             startApp();
 
         });
@@ -132,7 +149,18 @@ public class App extends Application {
         buttons.setSpacing(20);
 
         exitButton.setOnAction(action ->{
+            changeStatus();
             Platform.exit();
+            try {
+                fileRight.writeAveragedValues(engineRight.getStatistics());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            try {
+                fileLeft.writeAveragedValues(engineLeft.getStatistics());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
 
         buttonStartStop.setOnAction(action -> {
@@ -225,4 +253,5 @@ public class App extends Application {
         border.setRight(null);
         border.setLeft(null);
     }
+
 }

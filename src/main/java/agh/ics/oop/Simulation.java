@@ -1,6 +1,8 @@
 package agh.ics.oop;
 
 import agh.ics.oop.gui.App;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Random;
@@ -16,8 +18,10 @@ public class Simulation implements Runnable{
     private Boolean run;
     private boolean magic;
     private int useMagic;
+    private StatisticFile file;
 
-    public Simulation(GetParameters parameters, App applic, String TypeMap){
+
+    public Simulation(GetParameters parameters, App applic, String TypeMap, StatisticFile file){
         if(TypeMap == "RIGHT") {
             this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getCaloriesGrass(), parameters.getMagicRight());
             this.magic = parameters.getMagicRight();
@@ -34,6 +38,7 @@ public class Simulation implements Runnable{
         this.app = applic;
         this.run = false;
         this.useMagic = 0;
+        this.file = file;
 
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
@@ -63,7 +68,7 @@ public class Simulation implements Runnable{
         }
     }
 
-    public void day(){
+    public void day() throws IOException {
         if(run) {
             removeDeadAnimals();
             animalsMove();
@@ -72,11 +77,12 @@ public class Simulation implements Runnable{
             plantTuft();
             app.showMap();
             statistics.addOneDay();
+            file.writeDataInFileMap(statistics);
         }
     }
 
     public void run(){
-        while (animals.size() > 0) {
+        while (true) {
             try {
                 if(animals.size() == 5 && magic && useMagic < 3){
                     app.changeStatus();
@@ -88,9 +94,12 @@ public class Simulation implements Runnable{
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
                 System.out.println(ex.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
             }
 
         }
+
     }
 
     private void placeMagicAnimals() {
