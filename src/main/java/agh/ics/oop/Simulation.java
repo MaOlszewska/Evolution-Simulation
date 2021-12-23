@@ -43,7 +43,7 @@ public class Simulation implements Runnable{
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
 
-    private void placeAnimalsFirstTime(int animalNumber){  //place the first animals in random places on the map
+    private void placeAnimalsFirstTime(int animalNumber){
         Vector2d position;
         Random random = new Random();
         int x ;
@@ -100,7 +100,7 @@ public class Simulation implements Runnable{
         }
     }
 
-    private void removeDeadAnimals() {  // remove animals if have not enough energy
+    private void removeDeadAnimals() {
         int sumDays = 0;
         ArrayList<Animal> animalToRemove = new ArrayList<>();
         for (Animal animal : animals) {
@@ -119,7 +119,7 @@ public class Simulation implements Runnable{
         statistics.counterOfAvgLifeDaysDeadAnimals();
     }
 
-    private void animalsMove(){ // rotating or moving animals according to their genes
+    private void animalsMove(){
         int sumEnergy = 0;
         for(Animal animal : animals){
             animal.addOneDay();
@@ -131,8 +131,7 @@ public class Simulation implements Runnable{
         statistics.counterOfAvgEnergy(sumEnergy);
     }
 
-    // if there is more than one animal i one field, the strongest animal recevie all energy but if there are several animals
-    // that have the same amount of energy, taht energy is shared between them
+
     private void consumptionGrass() {
         LinkedList<Grass> grassToRemove = new LinkedList<>();
         int calories = parameters.getEnergyGrass();
@@ -153,8 +152,8 @@ public class Simulation implements Runnable{
     }
 
     private void animalReproduction(){
-        LinkedList<LinkedList<Animal>> allPairToREproduce = map.findPair(energyToMove * (0.5f));
-        for (LinkedList<Animal> parents : allPairToREproduce){
+        LinkedList<LinkedList<Animal>> allPairToReproduce = map.findPair(energyToMove * (0.5f));
+        for (LinkedList<Animal> parents : allPairToReproduce){
             Animal child = parents.poll().newBornAnimal(parents.poll());
             animals.add(child);
             map.place(child);
