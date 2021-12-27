@@ -18,7 +18,7 @@ Good to know - The magic map will add five new animals if there are 5 living ani
 <img src="simulationWindow.png"/>
 
 - You can stop simulations of right or left map by pressing the button `START/STOP`
-- While the simulation doesn't run, you can click on the animal to track it
+- While the simulation doesn't run, you can click on the animal to track it and see genotype
 - You can end the tracking of the animal by pressing the button `END TRACKING`
 - By pressing the button `EXIT` you will exit the application
 
