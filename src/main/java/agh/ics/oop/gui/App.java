@@ -22,7 +22,7 @@ import java.io.IOException;
 
 
 public class App extends Application {
-    private BorderPane border = new BorderPane();
+    private final BorderPane border = new BorderPane();
     private Simulation engineRight;
     private Simulation engineLeft;
     private GridPane gridPaneRight;
@@ -30,27 +30,31 @@ public class App extends Application {
     private StartParameters params;
     private VBox statsRight;
     private VBox statsLeft;
-    private Button startButton = new Button("START");
-    private Button exitButton = new Button("EXIT");
-    private Button buttonStartStopRight = new Button("START/STOP Right Map");
-    private Button buttonStartStopLeft = new Button("START/STOP Left Map");
-    private Button buttonEndTracking = new Button("END TRACKING");
+    private final Button startButton = new Button("START");
+    private final Button exitButton = new Button("EXIT");
+    private final Button buttonStartStopRight = new Button("START/STOP Right Map");
+    private final Button buttonStartStopLeft = new Button("START/STOP Left Map");
+    private final Button buttonEndTracking = new Button("END TRACKING");
     private StatisticFile fileRight;
     private StatisticFile fileLeft;
-    private Charts animalChart = new Charts("Animals");
-    private Charts grassChart = new Charts("Grass");
+    private final Charts animalChart = new Charts("Animals");
+    private final Charts grassChart = new Charts("Grass");
 
-    public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Evolution");
+    public void start(Stage primaryStage) throws Exception{
+        primaryStage.getIcons().add(new Image(new FileInputStream("src/main/resources/block.png")));
+        primaryStage.setTitle("Evolution of the World");
         primaryStage.setScene(new Scene(border, 1200,800));
         primaryStage.show();
 
         primaryStage.setOnCloseRequest(event -> {
-            changeStatusSimulation();
             try {
-                fileRight.writeAveragedValues(engineRight.getStatistics());
-                fileLeft.writeAveragedValues(engineLeft.getStatistics());
+                if(engineRight != null && engineLeft != null && engineLeft.getStatistics().getWorldDays() != 0) {
+                    changeStatusSimulation();
+                    fileRight.writeAveragedValues(engineRight.getStatistics());
+                    fileLeft.writeAveragedValues(engineLeft.getStatistics());
+                }
             } catch (IOException e) {
+                System.exit(0);
                 e.printStackTrace();
             }
         });
@@ -61,8 +65,8 @@ public class App extends Application {
         title.setStyle("-fx-font-weight: bold");
         title.setFont(new Font(15));
         border.setTop(title);
-        border.setAlignment(title, Pos.CENTER);
-        border.setMargin(title,new Insets(20,0,20,0));
+        BorderPane.setAlignment(title, Pos.CENTER);
+        BorderPane.setMargin(title,new Insets(20,0,20,0));
     }
 
     @Override
@@ -120,7 +124,7 @@ public class App extends Application {
         ImageView imageView = new ImageView(worldImage);
         imageView.setFitWidth(300);
         imageView.setFitHeight(300);
-        border.setAlignment(imageView, Pos.TOP_CENTER);
+        BorderPane.setAlignment(imageView, Pos.TOP_CENTER);
         border.setBottom(imageView);
         border.setCenter(inputList);
         border.setBackground(new Background(new BackgroundFill(Color.PALETURQUOISE, CornerRadii.EMPTY, Insets.EMPTY)));
@@ -174,8 +178,8 @@ public class App extends Application {
         buttons.getChildren().addAll(buttonStartStopLeft,centerButtons, buttonStartStopRight);
         buttons.setAlignment(Pos.CENTER);
         border.setBottom(buttons);
-        border.setAlignment(buttons, Pos.CENTER);
-        border.setMargin(buttons, new Insets(10,0,10,0));
+        BorderPane.setAlignment(buttons, Pos.CENTER);
+        BorderPane.setMargin(buttons, new Insets(10,0,10,0));
         exitButton.setStyle("-fx-background-color: #d79097; ");
         buttonStartStopLeft.setStyle("-fx-background-color: #d79097; ");
         buttonStartStopRight.setStyle("-fx-background-color: #d79097; ");
@@ -311,8 +315,8 @@ public class App extends Application {
             border.setCenter(charts);
             left.setSpacing(10);
             right.setSpacing(10);
-            border.setMargin(left, new Insets(20,20,0,30));
-            border.setMargin(right, new Insets(20,20,0,30));
+            BorderPane.setMargin(left, new Insets(20,20,0,30));
+            BorderPane.setMargin(right, new Insets(20,20,0,30));
 
         });
     }
