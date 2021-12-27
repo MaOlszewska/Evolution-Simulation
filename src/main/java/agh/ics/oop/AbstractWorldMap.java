@@ -130,7 +130,7 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
 
     public void removeEatenGrass(Grass tuft) {grass.remove(tuft.getPosition(),tuft);}
 
-    public boolean isEmptyJungle() {
+    public boolean isEmptyPlaceInJungle() {
         for(int i = lowerLeftJungle.x; i <= upperRightJungle.x; i++ ) {
             for (int j = lowerLeftJungle.y; j <= upperRightJungle.y; j++) {
                 if (!isOccupied(new Vector2d(i,j))) {
@@ -143,23 +143,23 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
 
     public Grass plantTuftInJungle() {
         Random random = new Random();
-        Vector2d pos;
+        Vector2d position;
         do {
-            int posX = lowerLeftJungle.x + random.nextInt(upperRightJungle.x - lowerLeftJungle.x + 1);
-            int posY = lowerLeftJungle.y + random.nextInt(upperRightJungle.y - lowerLeftJungle.y + 1);
-            pos = new Vector2d(posX,posY);
-        }while(isOccupied(pos));
-        Grass grasses = new Grass(pos);
-        grass.put(pos,grasses);
+            int positionX = lowerLeftJungle.x + random.nextInt(upperRightJungle.x - lowerLeftJungle.x + 1);
+            int positionY = lowerLeftJungle.y + random.nextInt(upperRightJungle.y - lowerLeftJungle.y + 1);
+            position = new Vector2d(positionX, positionY);
+        }while(isOccupied(position));
+        Grass grasses = new Grass(position);
+        grass.put(position,grasses);
         return grasses;
     }
 
-    public boolean isEmptySteppe() {
-        for(int i = 0; i <= upperRight.x;i++ ) {
+    public boolean isEmptyPlaceInSteppe() {
+        for(int i = 0; i <= upperRight.x; i++ ) {
             for (int j = 0; j <= upperRight.y; j++) {
-                Vector2d pos = new Vector2d(i,j);
-                if((!pos.follows(lowerLeftJungle) && !pos.precedes(upperRightJungle))) {
-                    if (!isOccupied(pos)) {
+                Vector2d position = new Vector2d(i, j);
+                if((!position.follows(lowerLeftJungle) && !position.precedes(upperRightJungle))) {
+                    if (!isOccupied(position)) {
                         return true;
                     }
                 }
@@ -200,18 +200,17 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
         return allPairToReproduce;
     }
 
-    public LinkedList<Animal> hungryAnimalsInPosition(Vector2d position) {
-        PriorityQueue<Animal> animalsOnPos = animals.get(position);
-        if (animalsOnPos != null && !animalsOnPos.isEmpty()){
-            LinkedList<Animal> toFeed = new LinkedList<>();
-            Animal first = animalsOnPos.poll();
-            toFeed.add(first);
-
-            while (animalsOnPos.peek() != null && animalsOnPos.peek().getEnergy() == first.getEnergy()){
-                toFeed.add(animalsOnPos.poll());
+    public LinkedList<Animal> hungryAnimalsAtPosition(Vector2d position) {
+        PriorityQueue<Animal> animalsAtPosition = animals.get(position);
+        if (animalsAtPosition != null && !animalsAtPosition.isEmpty()){
+            LinkedList<Animal> animalsToFeed = new LinkedList<>();
+            Animal first = animalsAtPosition.poll();
+            animalsToFeed.add(first);
+            while (animalsAtPosition.peek() != null && animalsAtPosition.peek().getEnergy() == first.getEnergy()){
+                animalsToFeed.add(animalsAtPosition.poll());
             }
-            animalsOnPos.addAll(toFeed);
-            return toFeed;
+            animalsAtPosition.addAll(animalsToFeed);
+            return animalsToFeed;
         }
         else return null;
     }

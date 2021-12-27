@@ -44,11 +44,9 @@ public class StartParameters {
         return energyGrass;
     }
 
-    public int getNumberOfAnimals() {
-        return numberOfAnimals;
-    }
+    public int getNumberOfAnimals(){ return numberOfAnimals; }
 
-    public boolean getMagicLeft(){ return magicLeft;}
+    public boolean getMagicLeft(){ return magicLeft; }
 
-    public boolean getMagicRight(){return magicRight;}
+    public boolean getMagicRight(){ return magicRight; }
 }

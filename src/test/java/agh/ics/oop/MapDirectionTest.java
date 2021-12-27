@@ -19,7 +19,7 @@ public class MapDirectionTest {
 
     @Test
     public void randomOrientationTest(){
-        MapDirection direction = MapDirection.randomOrientation();
+        MapDirection direction = MapDirection.getRandomOrientation();
         assertTrue(direction.toUnitVector().x >= -1 && direction.toUnitVector().x <=1);
         assertTrue(direction.toUnitVector().y >= -1 && direction.toUnitVector().y <=1);
     }

@@ -13,9 +13,13 @@ public class Animal {
     private int numberOfDays;
     private final ArrayList<IPositionChangeObserver> observers;
     private final int initialEnergy;
+    private boolean ifTracked;
+    private boolean ifChild;
+    private boolean ifDescendant;
+
 
     public Animal(Vector2d initialPosition, int initialEnergy, AbstractWorldMap map, AnimalGenes genes){
-        this.orientation = MapDirection.randomOrientation();
+        this.orientation = MapDirection.getRandomOrientation();
         this.position = initialPosition;
         this.energy = initialEnergy;
         this.map = map;
@@ -24,7 +28,11 @@ public class Animal {
         this.numberOfDays = 0;
         this.observers = new ArrayList<>();
         this.initialEnergy = initialEnergy;
+        this.ifTracked = false;
+        this.ifChild = false;
+        this.ifDescendant = false;
     }
+
     public void addOneDay(){this.numberOfDays += 1;}
 
     public int getNumberOfDays(){return numberOfDays;}
@@ -93,6 +101,10 @@ public class Animal {
     }
 
     public int getImage(){
+        if(this.energy >= this.initialEnergy / 4 * 3 && ifTracked) return 8;
+        else if(this.energy >= this.initialEnergy / 4 * 2 && ifTracked) return  7;
+        else if(this.energy >= this.initialEnergy / 4 && ifTracked) return 6;
+        else if(ifTracked) return 5;
         if(this.energy >= this.initialEnergy / 4 * 3 ) return 4;
         else if(this.energy >= this.initialEnergy / 4 * 2) return  3;
         else if(this.energy >= this.initialEnergy / 4) return 2;
@@ -101,15 +113,17 @@ public class Animal {
 
     public int selectMovement(){return genes.selectMovement();}
 
-    public Animal newBornAnimal( Animal dad){
-        int newBornEnergy = this.getEnergy()/ 4 + dad.getEnergy()/ 4;
+    public Animal newBornAnimal(Animal parent){
+        int newBornEnergy = this.getEnergy()/ 4 + parent.getEnergy()/ 4;
         Vector2d newBornPosition = this.getPosition();
-        AnimalGenes newBornGenes = createNewBornGenes(dad);
+        AnimalGenes newBornGenes = createNewBornGenes(parent);
         this.substractEnergy(this.getEnergy()/ 4);
-        dad.substractEnergy(dad.getEnergy()/ 4);
-        dad.addChild();
+        parent.substractEnergy(parent.getEnergy()/ 4);
+        parent.addChild();
+        Animal child = new Animal( newBornPosition,newBornEnergy, map, newBornGenes);
         this.addChild();
-        return new Animal( newBornPosition,newBornEnergy, map, newBornGenes);
+        if(this.ifTracked || parent.ifTracked) {child.addStatusChild();}
+        return child;
     }
 
     public AnimalGenes createNewBornGenes(Animal secondParent) {
@@ -146,4 +160,15 @@ public class Animal {
         for(int i = div + 1; i < 32; i++){newBornGenes[i] = firstAnimalGenes[i];}
         return newBornGenes;
     }
+
+    public void addStatusTracked(){this.ifTracked = true;}
+
+    public void removeStatusTracked(){this.ifTracked = false;}
+
+    public void addStatusChild(){this.ifChild = true;}
+
+    public void removeStatusChild(){this.ifChild= false;}
+
+    public boolean ifTracked(){return this.ifTracked;}
+
 }

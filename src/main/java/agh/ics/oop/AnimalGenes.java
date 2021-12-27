@@ -3,7 +3,7 @@ package agh.ics.oop;
 import java.util.Arrays;
 import java.util.Random;
 
-class AnimalGenes {
+public class AnimalGenes {
 
     private final int [] genes ;
 
@@ -30,4 +30,12 @@ class AnimalGenes {
 
     public int selectMovement(){
         Random random = new Random(); return genes[random.nextInt(32)];}
+
+    public String getString(){
+        StringBuilder gen = new StringBuilder();
+        for(int i = 0; i < 32; i++){
+            gen.append(this.genes[i]);
+        }
+        return gen.toString();
+    }
 }

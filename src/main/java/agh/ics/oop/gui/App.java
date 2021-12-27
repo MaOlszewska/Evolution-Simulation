@@ -3,16 +3,15 @@ package agh.ics.oop.gui;
 import agh.ics.oop.*;
 import javafx.application.Application;
 import javafx.application.Platform;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -35,19 +34,19 @@ public class App extends Application {
     private Button exitButton = new Button("EXIT");
     private Button buttonStartStopRight = new Button("START/STOP Right Map");
     private Button buttonStartStopLeft = new Button("START/STOP Left Map");
+    private Button buttonEndTracking = new Button("END TRACKING");
     private StatisticFile fileRight;
     private StatisticFile fileLeft;
     private Charts animalChart = new Charts("Animals");
     private Charts grassChart = new Charts("Grass");
 
-
     public void start(Stage primaryStage) throws Exception {
         primaryStage.setTitle("Evolution");
-        primaryStage.setScene(new Scene(border, 1200,750));
+        primaryStage.setScene(new Scene(border, 1200,800));
         primaryStage.show();
 
         primaryStage.setOnCloseRequest(event -> {
-            changeStatus();
+            changeStatusSimulation();
             try {
                 fileRight.writeAveragedValues(engineRight.getStatistics());
                 fileLeft.writeAveragedValues(engineLeft.getStatistics());
@@ -72,11 +71,11 @@ public class App extends Application {
         fileRight = new StatisticFile("src/main/resources/rightMapFile.txt");
         fileLeft = new StatisticFile("src/main/resources/leftMapFile.txt");
         VBox listOfTextField = new VBox();
-        TextField widthField = new TextField("10");
-        TextField heightField = new TextField("10");
+        TextField widthField = new TextField("5");
+        TextField heightField = new TextField("5");
         TextField jungleRatioField = new TextField("0.5");
         TextField energyGrassField = new TextField("50");
-        TextField numberOfAnimalsField = new TextField("30");
+        TextField numberOfAnimalsField = new TextField("15");
         TextField startEnergyField = new TextField("100");
         TextField energyToMoveField = new TextField("5");
         TextField magicLeftField = new TextField("false");
@@ -139,31 +138,15 @@ public class App extends Application {
             boolean magicRight = Boolean.parseBoolean(magicRightField.getText());
             border.setCenter(startButton);
             params = new StartParameters(width,height,jungleRatio,caloriesGrass,numberOfAnimals,startEnergy,energyToMOve, magicLeft, magicRight);
-            engineRight = new Simulation(params,this, true, fileRight );
+            engineRight = new Simulation(params,this, true, fileRight);
             engineLeft = new Simulation(params, this, false, fileLeft);
             startApp();
         });
     }
 
-
-
-
     private void addButtons(){
         HBox buttons = new HBox();
         buttons.setSpacing(300);
-
-        exitButton.setOnAction(action ->{
-            changeStatus();
-            Platform.exit();
-            try {
-                fileRight.writeAveragedValues(engineRight.getStatistics());
-                fileLeft.writeAveragedValues(engineLeft.getStatistics());
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
-
-
         buttonStartStopRight.setOnAction(action -> {
             engineRight.changeStatus();
         });
@@ -172,14 +155,31 @@ public class App extends Application {
             engineLeft.changeStatus();
         });
 
-        border.setBottom(buttons);
-        buttons.getChildren().addAll(buttonStartStopLeft, exitButton, buttonStartStopRight);
+        HBox centerButtons = new HBox(exitButton, buttonEndTracking);
+        centerButtons.setSpacing(15);
+        exitButton.setOnAction(action ->{
+            changeStatusSimulation();
+            Platform.exit();
+            try {
+                fileRight.writeAveragedValues(engineRight.getStatistics());
+                fileLeft.writeAveragedValues(engineLeft.getStatistics());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
+        buttonEndTracking.setOnAction(action -> {
+            endTracking();
+        });
+
+        buttons.getChildren().addAll(buttonStartStopLeft,centerButtons, buttonStartStopRight);
         buttons.setAlignment(Pos.CENTER);
+        border.setBottom(buttons);
         border.setAlignment(buttons, Pos.CENTER);
         border.setMargin(buttons, new Insets(10,0,10,0));
         exitButton.setStyle("-fx-background-color: #d79097; ");
         buttonStartStopLeft.setStyle("-fx-background-color: #d79097; ");
         buttonStartStopRight.setStyle("-fx-background-color: #d79097; ");
+        buttonEndTracking.setStyle("-fx-background-color: #d79097; ");
     }
 
     public void startApp(){
@@ -210,9 +210,52 @@ public class App extends Application {
         });
     }
 
-    public void changeStatus(){
+    public void showAnimalGenotype(String genotype){
+        Platform.runLater(() ->{
+            stopSimulation();
+            borderClear();
+            Label text = new Label("Genotype of clicked animal is: ");
+            text.setFont(new Font(15));
+            Label genotypeString = new Label(genotype);
+            genotypeString.setStyle("-fx-font-weight: bold");
+            genotypeString.setFont(new Font(25));
+            Button okButton = new Button("OK");
+            okButton.setStyle("-fx-background-color: #d79097; ");
+            VBox box = new VBox();
+            box.getChildren().addAll(text, genotypeString, okButton);
+            box.setSpacing(10);
+            border.setCenter(box);
+            box.setAlignment(Pos.CENTER);
+            okButton.setOnAction(action ->{
+                showMap();
+                addButtons();
+            });
+        });
+    }
+
+    public void stopSimulation(){
+        engineRight.stopStatus();
+        engineLeft.stopStatus();
+    }
+
+    public void changeStatusSimulation(){
         engineRight.changeStatus();
         engineLeft.changeStatus();
+    }
+
+    public void changeStatusTrackedLeft(){
+        engineRight.removeStatusTracked();
+        engineLeft.addStatusTracked();
+    }
+
+    public void changeStatusTrackedRight(){
+        engineRight.addStatusTracked();
+        engineLeft.removeStatusTracked();
+    }
+
+    public void endTracking(){
+        engineRight.removeStatusTracked();
+        engineLeft.removeStatusTracked();
     }
 
     public void showMap(){
@@ -221,12 +264,12 @@ public class App extends Application {
             UpdateMap rightMap = null;
             UpdateMap leftMap = null;
             try {
-                rightMap = new UpdateMap(engineRight);
+                rightMap = new UpdateMap(engineRight, this);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
             try {
-                leftMap = new UpdateMap(engineLeft);
+                leftMap = new UpdateMap(engineLeft, this);
             } catch (FileNotFoundException e) {
                 e.printStackTrace();
             }
@@ -242,10 +285,32 @@ public class App extends Application {
             animalChart.updateAnimalsChart(engineRight.getStatistics(), engineLeft.getStatistics());
             VBox charts = new VBox(animalChart.getChart(), grassChart.getChart());
 
+            if(engineLeft.getIfTrackedAnimal()){
+                Label deathDay;
+                Label numberofChildren = new Label("Number of children tracked animal: " + engineLeft.getChildrenOfTrackedAnimal());
+                if(engineLeft.getDeathDay() == 0) {deathDay = new Label("Tracked animal is still alive ");}
+                else {deathDay = new Label("Day of death of tracked Animal: " + engineLeft.getDeathDay());}
+                numberofChildren.setStyle("-fx-font-weight: bold");
+                deathDay.setStyle("-fx-font-weight: bold");
+                left.setAlignment(Pos.CENTER);
+                left.getChildren().addAll(numberofChildren, deathDay);
+            }
+            else if(engineRight.getIfTrackedAnimal()){
+                Label deathDay;
+                Label numberofChildren = new Label("Number of children tracked animal: " + engineRight.getChildrenOfTrackedAnimal());
+                if(engineRight.getDeathDay() == 0) {deathDay = new Label("Tracked animal is still alive ");}
+                else {deathDay = new Label("Day of death of tracked Animal: " + engineRight.getDeathDay());}
+                numberofChildren.setStyle("-fx-font-weight: bold");
+                deathDay.setStyle("-fx-font-weight: bold");
+                right.setAlignment(Pos.CENTER);
+                right.getChildren().addAll(numberofChildren, deathDay);
+            }
+
             border.setLeft(left);
             border.setRight(right);
             border.setCenter(charts);
-
+            left.setSpacing(10);
+            right.setSpacing(10);
             border.setMargin(left, new Insets(20,20,0,30));
             border.setMargin(right, new Insets(20,20,0,30));
 

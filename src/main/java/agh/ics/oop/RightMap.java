@@ -16,7 +16,5 @@ public class RightMap extends AbstractWorldMap{  // map with brick wall
     public boolean canMoveTo(Vector2d position) {
         return position.precedes(upperRight) && position.follows(lowerLeft);
     }
-
-
 }
 

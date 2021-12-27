@@ -18,7 +18,7 @@ public class StatisticFile {
         bw.newLine();bw.flush();bw.close();
     }
 
-    public void writeDataInFileMap(Statistics stats) throws IOException {
+    public void writeDataInFile(Statistics stats) throws IOException {
         BufferedWriter bw = null;
         updatedAveragedValues(stats);
         bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
@@ -37,6 +37,7 @@ public class StatisticFile {
         sumLengthLife += stats.getAvgLifeDaysOfDeadAnimal();
         sumAvgChildren += stats.getAvgChildren();
     }
+
     public void writeAveragedValues(Statistics stats) throws IOException {
         BufferedWriter bw = null;
         int numberOfDays = stats.getWorldDays();

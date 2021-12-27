@@ -1,9 +1,10 @@
 package agh.ics.oop.gui;
 
 import agh.ics.oop.Statistics;
+import javafx.scene.Node;
 import javafx.scene.chart.*;
 
-public class Charts {
+public class Charts{
 
     private LineChart chart;
     private  XYChart.Series rightMapSeries;

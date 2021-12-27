@@ -86,9 +86,9 @@ public class MapTest {
         map.plantTuftInJungle();
         map.plantTuftInJungle();
         map.plantTuftInJungle();
-        assertEquals(map.isEmptyJungle(), true);
+        assertEquals(map.isEmptyPlaceInJungle(), true);
         map.plantTuftInJungle();
-        assertEquals(map.isEmptyJungle(), false);
+        assertEquals(map.isEmptyPlaceInJungle(), false);
     }
 
 
@@ -104,7 +104,7 @@ public class MapTest {
         LinkedList<Animal> testList = new LinkedList<>();
         testList.add(animal1);
         testList.add(animal3);
-        assertEquals(map.hungryAnimalsInPosition(new Vector2d(1,1)), testList );
+        assertEquals(map.hungryAnimalsAtPosition(new Vector2d(1,1)), testList );
     }
 
     @Test

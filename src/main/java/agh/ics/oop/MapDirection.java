@@ -38,7 +38,7 @@ enum MapDirection {
         };
     }
 
-    public static MapDirection randomOrientation(){
+    public static MapDirection getRandomOrientation(){
         return values()[new Random().nextInt(values().length)];
     }
 }

@@ -10,15 +10,19 @@ import java.util.Random;
 public class Simulation implements Runnable{
     private final AbstractWorldMap map;
     private final StartParameters parameters;
-    private ArrayList<Animal> animals;
-    private ArrayList<Grass> grass;
-    private Statistics statistics;
-    private int energyToMove;
-    private App app;
+    private final ArrayList<Animal> animals;
+    private final ArrayList<Grass> grass;
+    private final Statistics statistics;
+    private final int energyToMove;
+    private final App app;
     private Boolean run;
-    private boolean magic;
+    private final boolean magic;
     private int useMagic;
-    private StatisticFile file;
+    private final StatisticFile file;
+    private int childerenOfTrackedAnimal;
+    private boolean ifTrackedAnimal;
+    private boolean typeMap;
+    private int deathDay;
 
 
     public Simulation(StartParameters parameters, App applic, boolean TypeMap, StatisticFile file){
@@ -39,7 +43,10 @@ public class Simulation implements Runnable{
         this.run = false;
         this.useMagic = 0;
         this.file = file;
-
+        this.childerenOfTrackedAnimal = 0;
+        this.ifTrackedAnimal = false;
+        this.typeMap = TypeMap;
+        this.deathDay = 0;
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
 
@@ -67,12 +74,13 @@ public class Simulation implements Runnable{
     public StartParameters getParameters(){return this.parameters;}
     public ArrayList<Grass> getGrass() {return this.grass;}
     public Statistics getStatistics(){return this.statistics;}
+    public void stopStatus(){this.run = false;}
 
     public void run(){
         while (true) {
             try {
                 if(animals.size() == 5 && magic && useMagic < 3){
-                    app.changeStatus();
+                    app.changeStatusSimulation();
                     placeMagicAnimals();
                     useMagic += 1;
                     app.addMagicAnimals();
@@ -80,7 +88,7 @@ public class Simulation implements Runnable{
                 day();
                 Thread.sleep(1000);
             } catch (InterruptedException ex) {
-                System.out.println(ex.toString());
+                System.out.println(ex);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -90,14 +98,18 @@ public class Simulation implements Runnable{
     public void day() throws IOException {
         if(run) {
             removeDeadAnimals();
-            animalsMove();
+            movingAnimals();
             consumptionGrass();
-            animalReproduction();
+            animalsReproduction();
             plantTuft();
             app.showMap();
             statistics.addOneDay();
-            file.writeDataInFileMap(statistics);
+            file.writeDataInFile(statistics);
         }
+    }
+
+    public void show(String genotype){
+        if(!this.run) app.showAnimalGenotype(genotype);
     }
 
     private void removeDeadAnimals() {
@@ -105,6 +117,7 @@ public class Simulation implements Runnable{
         ArrayList<Animal> animalToRemove = new ArrayList<>();
         for (Animal animal : animals) {
             if (animal.getEnergy() <= 0) {
+                if(animal.ifTracked()) this.deathDay = statistics.getWorldDays();
                 sumDays += animal.getNumberOfDays();
                 animalToRemove.add(animal);
             }
@@ -119,13 +132,13 @@ public class Simulation implements Runnable{
         statistics.counterOfAvgLifeDaysDeadAnimals();
     }
 
-    private void animalsMove(){
+    private void movingAnimals(){
         int sumEnergy = 0;
         for(Animal animal : animals){
-            animal.addOneDay();
             int movement = animal.selectMovement();
             animal.move(movement);
             animal.substractEnergy(energyToMove);
+            animal.addOneDay();
             sumEnergy += animal.getEnergy();
         }
         statistics.counterOfAvgEnergy(sumEnergy);
@@ -136,7 +149,7 @@ public class Simulation implements Runnable{
         LinkedList<Grass> grassToRemove = new LinkedList<>();
         int calories = parameters.getEnergyGrass();
         for (Grass tuft : grass) {
-            LinkedList<Animal> animalsOnPosition = map.hungryAnimalsInPosition(tuft.getPosition());
+            LinkedList<Animal> animalsOnPosition = map.hungryAnimalsAtPosition(tuft.getPosition());
             if (animalsOnPosition != null) {
                 for (Animal animal : animalsOnPosition) {
                     animal.addEnergy(calories / animalsOnPosition.size());
@@ -151,10 +164,13 @@ public class Simulation implements Runnable{
         }
     }
 
-    private void animalReproduction(){
+    private void animalsReproduction(){
         LinkedList<LinkedList<Animal>> allPairToReproduce = map.findPair(energyToMove * (0.5f));
         for (LinkedList<Animal> parents : allPairToReproduce){
-            Animal child = parents.poll().newBornAnimal(parents.poll());
+            Animal parentFirst = parents.poll();
+            Animal parentSecond = parents.poll();
+            if(parentFirst.ifTracked() || parentSecond.ifTracked()) this.childerenOfTrackedAnimal +=1;
+            Animal child = parentFirst.newBornAnimal(parentSecond);
             animals.add(child);
             map.place(child);
             statistics.addOneLiveAnimal();
@@ -163,12 +179,12 @@ public class Simulation implements Runnable{
     }
 
     private void plantTuft(){
-        if(map.isEmptyJungle()){
+        if(map.isEmptyPlaceInJungle()){
             Grass tuft = map.plantTuftInJungle();
             grass.add(tuft);
             statistics.addOneGrass();
         }
-        if(map.isEmptySteppe()){
+        if(map.isEmptyPlaceInSteppe()){
             Grass tuft = map.plantTuftInSteppe();
             grass.add(tuft);
             statistics.addOneGrass();
@@ -181,7 +197,7 @@ public class Simulation implements Runnable{
         int x;
         int y;
         for (int i = 0; i < 5; i++) {
-            if (map.isEmptyJungle() || map.isEmptySteppe()) {
+            if (map.isEmptyPlaceInJungle() || map.isEmptyPlaceInSteppe()) {
                 do {
                     x = random.nextInt(parameters.getWidth());
                     y = random.nextInt(parameters.getHeight());
@@ -196,4 +212,32 @@ public class Simulation implements Runnable{
             }
         }
     }
+
+    public void trackedAnimal(Animal animalTracked){
+        if(!run) {
+            animalTracked.addStatusTracked();
+            if (typeMap) app.changeStatusTrackedRight();
+            else app.changeStatusTrackedLeft();
+        }
+    }
+
+    public void addStatusTracked(){ this.ifTrackedAnimal = true;}
+
+    public void removeStatusTracked(){
+        this.deathDay = 0;
+        this.childerenOfTrackedAnimal = 0;
+        this.ifTrackedAnimal = false;
+        for (Animal animal : animals) {
+            animal.removeStatusChild();
+            animal.removeStatusTracked();
+        }
+    }
+
+    public int getChildrenOfTrackedAnimal(){return childerenOfTrackedAnimal;}
+
+    public boolean getIfTrackedAnimal(){ return ifTrackedAnimal;}
+
+    public boolean getRun(){return run;}
+
+    public int getDeathDay(){ return deathDay;}
 }

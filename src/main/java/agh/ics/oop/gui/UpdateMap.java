@@ -1,6 +1,7 @@
 package agh.ics.oop.gui;
 
 import agh.ics.oop.*;
+import javafx.application.Application;
 import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -15,9 +16,11 @@ public class UpdateMap {
     private final Simulation engine;
     private final GridPane gridPane;
     private final VBox stats;
+    private final Application app;
 
 
-    public UpdateMap(Simulation engine) throws FileNotFoundException {
+    public UpdateMap(Simulation engine, Application app) throws FileNotFoundException {
+        this.app = app;
         this.engine = engine;
         this.gridPane = new GridPane();
         this.stats = updateStatistic();
@@ -68,6 +71,10 @@ public class UpdateMap {
         Image giraffeImage = new Image(new FileInputStream("src/main/resources/giraffe.png"));
         Image catImage = new Image(new FileInputStream("src/main/resources/cat.png"));
         Image mouseImage = new Image(new FileInputStream("src/main/resources/mouse.png"));
+        Image elephantTrackedImage = new Image(new FileInputStream("src/main/resources/trackedElephant.png"));
+        Image giraffeTrackedImage = new Image(new FileInputStream("src/main/resources/trackedGiraffe.png"));
+        Image catTrackedImage = new Image(new FileInputStream("src/main/resources/trackedCat.png"));
+        Image mouseTrackedImage = new Image(new FileInputStream("src/main/resources/trackedMouse.png"));
 
         AbstractWorldMap map = engine.getMap();
 
@@ -75,6 +82,10 @@ public class UpdateMap {
         ImageView imageView  = new ImageView();
         for(Animal animal : animals){
             switch (animal.getImage()) {
+                case 8 -> imageView = new ImageView(elephantTrackedImage);
+                case 7 -> imageView = new ImageView(giraffeTrackedImage);
+                case 6 -> imageView = new ImageView(catTrackedImage);
+                case 5 -> imageView = new ImageView(mouseTrackedImage);
                 case 4 -> imageView = new ImageView(elephantImage);
                 case 3 -> imageView = new ImageView(giraffeImage);
                 case 2 -> imageView = new ImageView(catImage);
@@ -82,6 +93,13 @@ public class UpdateMap {
             }
             imageView.setFitWidth(600 / (4 * engine.getMap().getWidth() ));
             imageView.setFitHeight(600 / (4 * engine.getMap().getWidth() ));
+            imageView.setOnMouseClicked(event -> {
+                if(!engine.getRun()){
+                    AnimalGenes genes = animal.getGenes();
+                    engine.show(genes.getString());
+                    engine.trackedAnimal(animal);
+                }
+            });
             gridPane.add(imageView, animal.getPosition().x, animal.getPosition().y);
             gridPane.setAlignment(Pos.CENTER);
         }
@@ -91,6 +109,7 @@ public class UpdateMap {
             imageView = new ImageView(grassImage);
             imageView.setFitWidth(600 / (4 * engine.getMap().getWidth() ));
             imageView.setFitHeight(600 / (4 * engine.getMap().getWidth() ));
+
             gridPane.add(imageView, gras.getPosition().x,gras.getPosition().y);
             gridPane.setAlignment(Pos.CENTER);
         }
@@ -106,6 +125,7 @@ public class UpdateMap {
             for (int j = 0; j <= upperRight.y; j++) {
                 Vector2d pos = new Vector2d(i, j);
                 StackPane till = new StackPane();
+
                 if(pos.follows(lowerLeftJungle) && pos.precedes(upperRightJungle)) {
                     till.setStyle("-fx-background-color: #00b27a; ");
                     gridPane.add(till, i, j);

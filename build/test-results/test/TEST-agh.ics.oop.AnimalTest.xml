@@ -1,9 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<testsuite name="agh.ics.oop.AnimalTest" tests="3" skipped="0" failures="0" errors="0" timestamp="2021-12-22T23:04:28" hostname="DESKTOP-UM048HJ" time="0.133">
-  <properties/>
-  <testcase name="newBornTest()" classname="agh.ics.oop.AnimalTest" time="0.088"/>
-  <testcase name="getImageTest()" classname="agh.ics.oop.AnimalTest" time="0.015"/>
-  <testcase name="moveTest()" classname="agh.ics.oop.AnimalTest" time="0.015"/>
-  <system-out><![CDATA[]]></system-out>
-  <system-err><![CDATA[]]></system-err>
-</testsuite>
