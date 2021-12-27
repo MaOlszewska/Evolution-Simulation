@@ -52,9 +52,9 @@ public class App extends Application {
                     fileLeft.writeAveragedValues(engineLeft.getStatistics());
                 }
             } catch (IOException e) {
-                System.exit(0);
                 e.printStackTrace();
             }
+            System.exit(0);
         });
     }
 
@@ -161,13 +161,13 @@ public class App extends Application {
         centerButtons.setSpacing(15);
         exitButton.setOnAction(action ->{
             changeStatusSimulation();
-            Platform.exit();
             try {
                 fileRight.writeAveragedValues(engineRight.getStatistics());
                 fileLeft.writeAveragedValues(engineLeft.getStatistics());
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            System.exit(0);
         });
         buttonEndTracking.setOnAction(action -> {
             endTracking();
@@ -242,11 +242,8 @@ public class App extends Application {
         Platform.runLater(() -> {
             border.setLeft(null);
             UpdateMap leftMap = null;
-            try {
-                leftMap = new UpdateMap(engineLeft, this);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            leftMap = new UpdateMap(engineLeft, this);
+
             gridPaneLeft = leftMap.getGridPane();
             statsLeft =leftMap.getStats();
             VBox left =  new VBox(gridPaneLeft, statsLeft);
@@ -276,11 +273,8 @@ public class App extends Application {
         Platform.runLater(() -> {
             border.setRight(null);
             UpdateMap rightMap = null;
-            try {
-                rightMap = new UpdateMap(engineRight, this);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
+            rightMap = new UpdateMap(engineRight, this);
+
             gridPaneRight = rightMap.getGridPane();
             statsRight = rightMap.getStats();
             VBox right = new VBox(gridPaneRight, statsRight);

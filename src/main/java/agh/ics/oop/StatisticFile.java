@@ -13,9 +13,11 @@ public class StatisticFile {
     public StatisticFile(String path) throws IOException {
         this.statisticMapFile = new File(path);
         BufferedWriter bw;
-        bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
+        bw = new BufferedWriter(new FileWriter(statisticMapFile));
         bw.write("day,number of animals,number of grass,avg energy,length of life,avg children");
-        bw.newLine();bw.flush();bw.close();
+        bw.newLine();
+        bw.flush();
+        bw.close();
     }
 
     public void writeDataInFile(Statistics stats) throws IOException {
@@ -42,9 +44,9 @@ public class StatisticFile {
         BufferedWriter bw;
         int numberOfDays = stats.getWorldDays();
         bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
-        bw.write(sumAnimals/numberOfDays  + "," + sumGrass / numberOfDays  + "," + sumAvgEnergy / numberOfDays
-                +","+ sumLengthLife / numberOfDays  + "," + sumAvgChildren / numberOfDays);
         bw.newLine();
+        bw.write("," + sumAnimals/numberOfDays  + "," + sumGrass / numberOfDays  + "," + sumAvgEnergy / numberOfDays
+                +","+ sumLengthLife / numberOfDays  + "," + sumAvgChildren / numberOfDays);
         bw.flush();
         bw.close();
     }

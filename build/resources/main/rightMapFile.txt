@@ -1,0 +1,1 @@
+day,number of animals,number of grass,avg energy,length of life,avg children
