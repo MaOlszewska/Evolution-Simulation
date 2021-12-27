@@ -44,8 +44,7 @@ public class StatisticFile {
         BufferedWriter bw;
         int numberOfDays = stats.getWorldDays();
         bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
-        bw.newLine();
-        bw.write("," + sumAnimals/numberOfDays  + "," + sumGrass / numberOfDays  + "," + sumAvgEnergy / numberOfDays
+        bw.write(" ," + sumAnimals/numberOfDays  + "," + sumGrass / numberOfDays  + "," + sumAvgEnergy / numberOfDays
                 +","+ sumLengthLife / numberOfDays  + "," + sumAvgChildren / numberOfDays);
         bw.flush();
         bw.close();
