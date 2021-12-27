@@ -28,7 +28,7 @@ public class UpdateMap {
             this.gridPane.getColumnConstraints().add(new ColumnConstraints(1200/ (3 * engine.getMap().getWidth() )));
         }
         for (int i = 0; i < engine.getParameters().getHeight(); i++){
-            this.gridPane.getRowConstraints().add(new RowConstraints(700 / (2 * engine.getMap().getHeight()) ));
+            this.gridPane.getRowConstraints().add(new RowConstraints(1000/ (3 * engine.getMap().getHeight()) ));
         }
         updateMap();
     }
@@ -54,10 +54,10 @@ public class UpdateMap {
         Label avgEnergy = new Label("Average of energy: " + statistics.getAvgEnergy());
         Label avgLifeDaysDeadAnimal = new Label("Average of days: " + statistics.getAvgLifeDaysOfDeadAnimal());
         Label avgChildren = new Label("Average of Children: " + statistics.getAvgChildren());
-        Label dominantGentype = new Label("Dominant Genotype:  " + statistics.getDominantGenotype());
+        Label dominantGenotype = new Label("Dominant Genotype:  " + statistics.getDominantGenotype());
 
         VBox stats = new VBox();
-        stats.getChildren().addAll(title,worldDays, numberOfAliveAnimals, numberOfGrass, numberOfDeadAnimals, avgEnergy, avgLifeDaysDeadAnimal, avgChildren, dominantGentype);
+        stats.getChildren().addAll(title,worldDays, numberOfAliveAnimals, numberOfGrass, numberOfDeadAnimals, avgEnergy, avgLifeDaysDeadAnimal, avgChildren, dominantGenotype);
         stats.setAlignment(Pos.TOP_CENTER);
         stats.setSpacing(10);
         title.setFont(new Font(15));
@@ -91,8 +91,8 @@ public class UpdateMap {
                 case 2 -> imageView = new ImageView(catImage);
                 case 1 -> imageView = new ImageView(mouseImage);
             }
-            imageView.setFitWidth(600 / (4 * engine.getMap().getWidth() ));
-            imageView.setFitHeight(600 / (4 * engine.getMap().getWidth() ));
+            imageView.setFitWidth(1000 / (4 * engine.getMap().getWidth() ));
+            imageView.setFitHeight(1000 / (4 * engine.getMap().getWidth() ));
             imageView.setOnMouseClicked(event -> {
                 if(!engine.getRun()){
                     AnimalGenes genes = animal.getGenes();
@@ -107,8 +107,8 @@ public class UpdateMap {
         ArrayList<Grass> grass = engine.getGrass();
         for(Grass gras : grass){
             imageView = new ImageView(grassImage);
-            imageView.setFitWidth(600 / (4 * engine.getMap().getWidth() ));
-            imageView.setFitHeight(600 / (4 * engine.getMap().getWidth() ));
+            imageView.setFitWidth(800 / (4 * engine.getMap().getWidth() ));
+            imageView.setFitHeight(800/ (4 * engine.getMap().getWidth() ));
 
             gridPane.add(imageView, gras.getPosition().x,gras.getPosition().y);
             gridPane.setAlignment(Pos.CENTER);

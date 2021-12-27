@@ -11,6 +11,4 @@ public class Grass {
     public Vector2d getPosition() {
         return grassPosition;
     }
-
-    public String toString() {return "*";}
 }

@@ -1,6 +1,5 @@
 package agh.ics.oop;
 
-
 public class LeftMap extends AbstractWorldMap{  // folding Map
 
     public LeftMap( int width, int height,float jungleSize, int caloriesGrass, boolean magicLeft) {

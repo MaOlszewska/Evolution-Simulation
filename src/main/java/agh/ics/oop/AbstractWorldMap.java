@@ -91,9 +91,8 @@ public abstract class AbstractWorldMap implements IWorldMap,IPositionChangeObser
 
     @Override
     public boolean isOccupied(Vector2d position) {
-        if ((animals.get(position) == null
-                || (animals.get(position).isEmpty())) && grass.get(position) == null) return false;
-        return true;
+        return (animals.get(position) != null
+                && (!animals.get(position).isEmpty())) || grass.get(position) != null;
     }
 
     @Override

@@ -5,7 +5,6 @@ import javafx.application.Application;
 import javafx.application.Platform;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -45,7 +44,6 @@ public class App extends Application {
         primaryStage.setTitle("Evolution of the World");
         primaryStage.setScene(new Scene(border, 1200,800));
         primaryStage.show();
-
         primaryStage.setOnCloseRequest(event -> {
             try {
                 if(engineRight != null && engineLeft != null && engineLeft.getStatistics().getWorldDays() != 0) {
@@ -63,7 +61,7 @@ public class App extends Application {
     private void initBorder(){
         Label title = new Label("The mystery of the beginning of all things is unsolved, but you can try... ");
         title.setStyle("-fx-font-weight: bold");
-        title.setFont(new Font(15));
+        title.setFont(new Font(25));
         border.setTop(title);
         BorderPane.setAlignment(title, Pos.CENTER);
         BorderPane.setMargin(title,new Insets(20,0,20,0));
@@ -207,8 +205,9 @@ public class App extends Application {
             magicButton.setStyle("-fx-background-color: #d79097; ");
             border.setCenter(magicButton);
             magicButton.setOnAction(action ->{
-                engineRight.changeStatus();
-                engineLeft.changeStatus();
+                changeStatusSimulation();
+                updateLeftMap();
+                updateRightMap();
                 addButtons();
             });
         });
@@ -231,9 +230,79 @@ public class App extends Application {
             border.setCenter(box);
             box.setAlignment(Pos.CENTER);
             okButton.setOnAction(action ->{
-                showMap();
+                changeStatusSimulation();
+                updateRightMap();
+                updateLeftMap();
                 addButtons();
             });
+        });
+    }
+
+    public void updateLeftMap(){
+        Platform.runLater(() -> {
+            border.setLeft(null);
+            UpdateMap leftMap = null;
+            try {
+                leftMap = new UpdateMap(engineLeft, this);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            gridPaneLeft = leftMap.getGridPane();
+            statsLeft =leftMap.getStats();
+            VBox left =  new VBox(gridPaneLeft, statsLeft);
+            border.setLeft(left);
+            left.setSpacing(10);
+            BorderPane.setMargin(left, new Insets(20,20,0,30));
+
+            grassChart.updateGrassChart(engineRight.getStatistics(), engineLeft.getStatistics());
+            animalChart.updateAnimalsChart(engineRight.getStatistics(), engineLeft.getStatistics());
+            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart());
+            border.setCenter(charts);
+
+            if(engineLeft.getIfTrackedAnimal()){
+                Label deathDay;
+                Label numberOfChildren = new Label("Number of children tracked animal: " + engineLeft.getChildrenOfTrackedAnimal());
+                if(engineLeft.getDeathDay() == 0) {deathDay = new Label("Tracked animal is still alive ");}
+                else {deathDay = new Label("Day of death of tracked Animal: " + engineLeft.getDeathDay());}
+                numberOfChildren.setStyle("-fx-font-weight: bold");
+                deathDay.setStyle("-fx-font-weight: bold");
+                left.setAlignment(Pos.CENTER);
+                left.getChildren().addAll(numberOfChildren, deathDay);
+            }
+        });
+    }
+
+    public void updateRightMap(){
+        Platform.runLater(() -> {
+            border.setRight(null);
+            UpdateMap rightMap = null;
+            try {
+                rightMap = new UpdateMap(engineRight, this);
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+            gridPaneRight = rightMap.getGridPane();
+            statsRight = rightMap.getStats();
+            VBox right = new VBox(gridPaneRight, statsRight);
+            border.setRight(right);
+            right.setSpacing(10);
+            BorderPane.setMargin(right, new Insets(20,20,0,30));
+
+            grassChart.updateGrassChart(engineRight.getStatistics(), engineLeft.getStatistics());
+            animalChart.updateAnimalsChart(engineRight.getStatistics(), engineLeft.getStatistics());
+            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart());
+            border.setCenter(charts);
+
+            if(engineRight.getIfTrackedAnimal()){
+                Label deathDay;
+                Label numberOfChildren = new Label("Number of children tracked animal: " + engineRight.getChildrenOfTrackedAnimal());
+                if(engineRight.getDeathDay() == 0) {deathDay = new Label("Tracked animal is still alive ");}
+                else {deathDay = new Label("Day of death of tracked Animal: " + engineRight.getDeathDay());}
+                numberOfChildren.setStyle("-fx-font-weight: bold");
+                deathDay.setStyle("-fx-font-weight: bold");
+                right.setAlignment(Pos.CENTER);
+                right.getChildren().addAll(numberOfChildren, deathDay);
+            }
         });
     }
 
@@ -260,65 +329,6 @@ public class App extends Application {
     public void endTracking(){
         engineRight.removeStatusTracked();
         engineLeft.removeStatusTracked();
-    }
-
-    public void showMap(){
-        Platform.runLater(() ->{
-            borderClear();
-            UpdateMap rightMap = null;
-            UpdateMap leftMap = null;
-            try {
-                rightMap = new UpdateMap(engineRight, this);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            try {
-                leftMap = new UpdateMap(engineLeft, this);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-            gridPaneRight = rightMap.getGridPane();
-            gridPaneLeft = leftMap.getGridPane();
-            statsRight = rightMap.getStats();
-            statsLeft =leftMap.getStats();
-
-            VBox right = new VBox(gridPaneRight, statsRight);
-            VBox left =  new VBox(gridPaneLeft, statsLeft);
-
-            grassChart.updateGrassChart(engineRight.getStatistics(), engineLeft.getStatistics());
-            animalChart.updateAnimalsChart(engineRight.getStatistics(), engineLeft.getStatistics());
-            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart());
-
-            if(engineLeft.getIfTrackedAnimal()){
-                Label deathDay;
-                Label numberofChildren = new Label("Number of children tracked animal: " + engineLeft.getChildrenOfTrackedAnimal());
-                if(engineLeft.getDeathDay() == 0) {deathDay = new Label("Tracked animal is still alive ");}
-                else {deathDay = new Label("Day of death of tracked Animal: " + engineLeft.getDeathDay());}
-                numberofChildren.setStyle("-fx-font-weight: bold");
-                deathDay.setStyle("-fx-font-weight: bold");
-                left.setAlignment(Pos.CENTER);
-                left.getChildren().addAll(numberofChildren, deathDay);
-            }
-            else if(engineRight.getIfTrackedAnimal()){
-                Label deathDay;
-                Label numberofChildren = new Label("Number of children tracked animal: " + engineRight.getChildrenOfTrackedAnimal());
-                if(engineRight.getDeathDay() == 0) {deathDay = new Label("Tracked animal is still alive ");}
-                else {deathDay = new Label("Day of death of tracked Animal: " + engineRight.getDeathDay());}
-                numberofChildren.setStyle("-fx-font-weight: bold");
-                deathDay.setStyle("-fx-font-weight: bold");
-                right.setAlignment(Pos.CENTER);
-                right.getChildren().addAll(numberofChildren, deathDay);
-            }
-
-            border.setLeft(left);
-            border.setRight(right);
-            border.setCenter(charts);
-            left.setSpacing(10);
-            right.setSpacing(10);
-            BorderPane.setMargin(left, new Insets(20,20,0,30));
-            BorderPane.setMargin(right, new Insets(20,20,0,30));
-
-        });
     }
 
     private void borderClear(){

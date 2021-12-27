@@ -14,8 +14,6 @@ public class Animal {
     private final ArrayList<IPositionChangeObserver> observers;
     private final int initialEnergy;
     private boolean ifTracked;
-    private boolean ifChild;
-    private boolean ifDescendant;
 
 
     public Animal(Vector2d initialPosition, int initialEnergy, AbstractWorldMap map, AnimalGenes genes){
@@ -29,8 +27,6 @@ public class Animal {
         this.observers = new ArrayList<>();
         this.initialEnergy = initialEnergy;
         this.ifTracked = false;
-        this.ifChild = false;
-        this.ifDescendant = false;
     }
 
     public void addOneDay(){this.numberOfDays += 1;}
@@ -47,7 +43,7 @@ public class Animal {
 
     public AnimalGenes getGenes(){return this.genes;}
 
-    public void substractEnergy(int i ){this.energy -= i;}
+    public void subtractEnergy(int i ){this.energy -= i;}
 
     public void addEnergy(int i){this.energy += i;}
 
@@ -117,57 +113,47 @@ public class Animal {
         int newBornEnergy = this.getEnergy()/ 4 + parent.getEnergy()/ 4;
         Vector2d newBornPosition = this.getPosition();
         AnimalGenes newBornGenes = createNewBornGenes(parent);
-        this.substractEnergy(this.getEnergy()/ 4);
-        parent.substractEnergy(parent.getEnergy()/ 4);
+        this.subtractEnergy(this.getEnergy()/ 4);
+        parent.subtractEnergy(parent.getEnergy()/ 4);
         parent.addChild();
         Animal child = new Animal( newBornPosition,newBornEnergy, map, newBornGenes);
         this.addChild();
-        if(this.ifTracked || parent.ifTracked) {child.addStatusChild();}
         return child;
     }
 
     public AnimalGenes createNewBornGenes(Animal secondParent) {
         int[] newBornGenes;
-        int fisrtAnimalEnergy = this.getEnergy();
+        int firstAnimalEnergy = this.getEnergy();
         int secondAnimalEnergy = secondParent.getEnergy();
         int[] firstAnimalGenes = this.genes.getGenes();
         int[] secondAnimalGenes = secondParent.genes.getGenes();
-        int div = (int) ((((float)(fisrtAnimalEnergy)/(fisrtAnimalEnergy + secondAnimalEnergy))) * 32 - 1);
+        int div = (int) ((((float)(firstAnimalEnergy)/(firstAnimalEnergy + secondAnimalEnergy))) * 32 - 1);
 
-        if(fisrtAnimalEnergy >= secondAnimalEnergy){
-            Random random = new Random(); // true-left false-right
-            if(random.nextBoolean()){newBornGenes = leftSide(div, secondAnimalGenes, firstAnimalGenes);}
-            else{newBornGenes = rightSide(div, secondAnimalGenes, firstAnimalGenes);}
-        }
-        else{
-            Random random = new Random(); // true-left false-right
-            if(random.nextBoolean()){newBornGenes = leftSide(div, secondAnimalGenes, firstAnimalGenes);}
-            else{newBornGenes = rightSide(div, secondAnimalGenes, firstAnimalGenes);}
-        }
+        // true-left false-right
+        Random random = new Random(); // true-left false-right
+        if(random.nextBoolean()){newBornGenes = leftSide(div, secondAnimalGenes, firstAnimalGenes);}
+        else{newBornGenes = rightSide(div, secondAnimalGenes, firstAnimalGenes);}
         Arrays.sort(newBornGenes);
         return new AnimalGenes(newBornGenes);
     }
 
     private int[] rightSide(int div, int[] firstAnimalGenes, int[] secondAnimalGenes ){
         int[] newBornGenes = new int[32];
-        for(int i = 32 - div - 1; i < 32; i++){newBornGenes[i] = secondAnimalGenes[i];}
-        for(int i = 0; i < 32 - div - 1; i++){newBornGenes[i] = firstAnimalGenes[i];}
+        if (32 - (32 - div - 1) >= 0) System.arraycopy(secondAnimalGenes, 32 - div - 1, newBornGenes, 32 - div - 1, 32 - (32 - div - 1));
+        if (32 - div - 1 >= 0) System.arraycopy(firstAnimalGenes, 0, newBornGenes, 0, 32 - div - 1);
         return newBornGenes;
     }
     private int[] leftSide(int div, int[] firstAnimalGenes, int[] secondAnimalGenes){
         int[] newBornGenes = new int[32];
-        for(int i = 0  ; i <= div; i++){newBornGenes[i] = secondAnimalGenes[i];}
-        for(int i = div + 1; i < 32; i++){newBornGenes[i] = firstAnimalGenes[i];}
+        if (div + 1 >= 0) System.arraycopy(secondAnimalGenes, 0, newBornGenes, 0, div + 1);
+        if (32 - (div + 1) >= 0) System.arraycopy(firstAnimalGenes, div + 1, newBornGenes, div + 1, 32 - (div + 1));
         return newBornGenes;
     }
 
     public void addStatusTracked(){this.ifTracked = true;}
 
-    public void removeStatusTracked(){this.ifTracked = false;}
+    public void removeAnimalStatusTracked(){this.ifTracked = false;}
 
-    public void addStatusChild(){this.ifChild = true;}
-
-    public void removeStatusChild(){this.ifChild= false;}
 
     public boolean ifTracked(){return this.ifTracked;}
 

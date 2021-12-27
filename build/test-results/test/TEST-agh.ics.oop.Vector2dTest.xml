@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite name="agh.ics.oop.Vector2dTest" tests="4" skipped="0" failures="0" errors="0" timestamp="2021-12-27T10:05:19" hostname="DESKTOP-UM048HJ" time="0.141">
+  <properties/>
+  <testcase name="addTest()" classname="agh.ics.oop.Vector2dTest" time="0.108"/>
+  <testcase name="precedesTest()" classname="agh.ics.oop.Vector2dTest" time="0.012"/>
+  <testcase name="hashCodeTest()" classname="agh.ics.oop.Vector2dTest" time="0.004"/>
+  <testcase name="followsTest()" classname="agh.ics.oop.Vector2dTest" time="0.008"/>
+  <system-out><![CDATA[]]></system-out>
+  <system-err><![CDATA[]]></system-err>
+</testsuite>

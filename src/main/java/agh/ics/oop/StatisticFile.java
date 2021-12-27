@@ -3,7 +3,7 @@ package agh.ics.oop;
 import java.io.*;
 
 public class StatisticFile {
-    private File statisticMapFile;
+    private final File statisticMapFile;
     private int sumAnimals;
     private int sumGrass;
     private int sumAvgEnergy;
@@ -12,14 +12,14 @@ public class StatisticFile {
 
     public StatisticFile(String path) throws IOException {
         this.statisticMapFile = new File(path);
-        BufferedWriter bw = null;
+        BufferedWriter bw;
         bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
         bw.write("day,number of animals,number of grass,avg energy,length of life,avg children");
         bw.newLine();bw.flush();bw.close();
     }
 
     public void writeDataInFile(Statistics stats) throws IOException {
-        BufferedWriter bw = null;
+        BufferedWriter bw;
         updatedAveragedValues(stats);
         bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
         bw.write(stats.getWorldDays() + "," + stats.getNumberOfAliveAnimals()+ ","+
@@ -39,7 +39,7 @@ public class StatisticFile {
     }
 
     public void writeAveragedValues(Statistics stats) throws IOException {
-        BufferedWriter bw = null;
+        BufferedWriter bw;
         int numberOfDays = stats.getWorldDays();
         bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
         bw.write(sumAnimals/numberOfDays  + "," + sumGrass / numberOfDays  + "," + sumAvgEnergy / numberOfDays

@@ -1,14 +1,13 @@
 package agh.ics.oop.gui;
 
 import agh.ics.oop.Statistics;
-import javafx.scene.Node;
 import javafx.scene.chart.*;
 
 public class Charts{
 
-    private LineChart chart;
-    private  XYChart.Series rightMapSeries;
-    private  XYChart.Series leftMapSeries;
+    private final LineChart chart;
+    private final XYChart.Series rightMapSeries;
+    private final XYChart.Series leftMapSeries;
     public Charts(String string){
         NumberAxis xAxis = new NumberAxis();
         NumberAxis yAxis = new NumberAxis();
@@ -22,6 +21,7 @@ public class Charts{
         leftMapSeries.setName( "Left");
         chart.setCreateSymbols(false);
         chart.lookup(".chart-legend").setStyle("-fx-background-color: transparent;");
+        chart.getData().addAll(leftMapSeries, rightMapSeries);
     }
 
     public LineChart getChart(){return chart;}
@@ -29,16 +29,10 @@ public class Charts{
     public void updateAnimalsChart(Statistics stats, Statistics leftStats){
         leftMapSeries.getData().add(new XYChart.Data(leftStats.getWorldDays(), leftStats.getNumberOfAliveAnimals()));
         rightMapSeries.getData().add(new XYChart.Data(stats.getWorldDays(),stats.getNumberOfAliveAnimals()));
-        chart.getData().add(leftMapSeries);
-        chart.getData().add(rightMapSeries);
     }
 
     public void updateGrassChart(Statistics stats, Statistics leftStats){
         leftMapSeries.getData().add(new XYChart.Data(leftStats.getWorldDays(), leftStats.getNumberOfGrass()));
         rightMapSeries.getData().add(new XYChart.Data(stats.getWorldDays(),stats.getNumberOfGrass()));
-        chart.getData().add(leftMapSeries);
-        chart.getData().add(rightMapSeries);
     }
-
-
 }

@@ -1,7 +1,6 @@
 package agh.ics.oop;
 
 import agh.ics.oop.gui.App;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -19,13 +18,13 @@ public class Simulation implements Runnable{
     private final boolean magic;
     private int useMagic;
     private final StatisticFile file;
-    private int childerenOfTrackedAnimal;
+    private int childrenOfTrackedAnimal;
     private boolean ifTrackedAnimal;
-    private boolean typeMap;
+    private final boolean typeMap;
     private int deathDay;
 
 
-    public Simulation(StartParameters parameters, App applic, boolean TypeMap, StatisticFile file){
+    public Simulation(StartParameters parameters, App app, boolean TypeMap, StatisticFile file){
         if(TypeMap) {
             this.map = new RightMap(parameters.getWidth(),parameters.getHeight(),parameters.getJungleRatio(), parameters.getEnergyGrass(), parameters.getMagicRight());
             this.magic = parameters.getMagicRight();
@@ -39,16 +38,31 @@ public class Simulation implements Runnable{
         this.grass = new ArrayList<>();
         this.energyToMove = parameters.getEnergyToMove();
         this.statistics = new Statistics(parameters.getStartEnergy(), parameters.getNumberOfAnimals());
-        this.app = applic;
+        this.app = app;
         this.run = false;
         this.useMagic = 0;
         this.file = file;
-        this.childerenOfTrackedAnimal = 0;
         this.ifTrackedAnimal = false;
+        this.childrenOfTrackedAnimal = 0;
         this.typeMap = TypeMap;
         this.deathDay = 0;
         placeAnimalsFirstTime(parameters.getNumberOfAnimals());
     }
+
+    public int getChildrenOfTrackedAnimal(){return childrenOfTrackedAnimal;}
+    public boolean getIfTrackedAnimal(){ return ifTrackedAnimal;}
+    public boolean getRun(){return run;}
+    public int getDeathDay(){ return deathDay;}
+    public AbstractWorldMap getMap(){return this.map;}
+    public StartParameters getParameters(){return this.parameters;}
+    public ArrayList<Grass> getGrass() {return this.grass;}
+    public Statistics getStatistics(){return this.statistics;}
+    public void changeStatus(){this.run = !this.run;}
+    public void show(String genotype){
+        if(!this.run) app.showAnimalGenotype(genotype);
+    }
+    public void addStatusTracked(){ this.ifTrackedAnimal = true;}
+    public void stopStatus(){this.run = false;}
 
     private void placeAnimalsFirstTime(int animalNumber){
         Vector2d position;
@@ -69,24 +83,17 @@ public class Simulation implements Runnable{
         }
     }
 
-    public void changeStatus(){this.run = !this.run;}
-    public AbstractWorldMap getMap(){return this.map;}
-    public StartParameters getParameters(){return this.parameters;}
-    public ArrayList<Grass> getGrass() {return this.grass;}
-    public Statistics getStatistics(){return this.statistics;}
-    public void stopStatus(){this.run = false;}
-
     public void run(){
         while (true) {
             try {
                 if(animals.size() == 5 && magic && useMagic < 3){
-                    app.changeStatusSimulation();
+                    app.stopSimulation();
                     placeMagicAnimals();
                     useMagic += 1;
                     app.addMagicAnimals();
                 }
                 day();
-                Thread.sleep(1000);
+                Thread.sleep(500);
             } catch (InterruptedException ex) {
                 System.out.println(ex);
             } catch (IOException e) {
@@ -102,14 +109,11 @@ public class Simulation implements Runnable{
             consumptionGrass();
             animalsReproduction();
             plantTuft();
-            app.showMap();
-            statistics.addOneDay();
+            if(typeMap)app.updateRightMap();
+            else app.updateLeftMap();
+            statistics.addDay();
             file.writeDataInFile(statistics);
         }
-    }
-
-    public void show(String genotype){
-        if(!this.run) app.showAnimalGenotype(genotype);
     }
 
     private void removeDeadAnimals() {
@@ -123,13 +127,13 @@ public class Simulation implements Runnable{
             }
         }
         for (Animal animal : animalToRemove) {
-            statistics.addOneDeadAnimal();
+            statistics.addDeadAnimal();
             animals.remove(animal);
             map.removeDeadAnimal(animal);
         }
-        statistics.counterAvgChildrenOfAliveAnimals(animals);
+        statistics.calculateAvgChildrenOfAliveAnimals(animals);
         statistics.addDaysDeadAnimal(sumDays);
-        statistics.counterOfAvgLifeDaysDeadAnimals();
+        statistics.calculateAvgLifeDaysDeadAnimals();
     }
 
     private void movingAnimals(){
@@ -137,11 +141,11 @@ public class Simulation implements Runnable{
         for(Animal animal : animals){
             int movement = animal.selectMovement();
             animal.move(movement);
-            animal.substractEnergy(energyToMove);
+            animal.subtractEnergy(energyToMove);
             animal.addOneDay();
             sumEnergy += animal.getEnergy();
         }
-        statistics.counterOfAvgEnergy(sumEnergy);
+        statistics.calculateOfAvgEnergy(sumEnergy);
     }
 
 
@@ -160,7 +164,7 @@ public class Simulation implements Runnable{
         for (Grass tuft : grassToRemove) {
             grass.remove(tuft);
             map.removeEatenGrass(tuft);
-            statistics.substractOneGrass();
+            statistics.subtractGrass();
         }
     }
 
@@ -169,11 +173,11 @@ public class Simulation implements Runnable{
         for (LinkedList<Animal> parents : allPairToReproduce){
             Animal parentFirst = parents.poll();
             Animal parentSecond = parents.poll();
-            if(parentFirst.ifTracked() || parentSecond.ifTracked()) this.childerenOfTrackedAnimal +=1;
+            if(parentFirst.ifTracked() || parentSecond.ifTracked()) this.childrenOfTrackedAnimal +=1;
             Animal child = parentFirst.newBornAnimal(parentSecond);
             animals.add(child);
             map.place(child);
-            statistics.addOneLiveAnimal();
+            statistics.addLiveAnimal();
         }
         statistics.findDominantGenotype(animals);
     }
@@ -182,12 +186,12 @@ public class Simulation implements Runnable{
         if(map.isEmptyPlaceInJungle()){
             Grass tuft = map.plantTuftInJungle();
             grass.add(tuft);
-            statistics.addOneGrass();
+            statistics.addGrass();
         }
         if(map.isEmptyPlaceInSteppe()){
             Grass tuft = map.plantTuftInSteppe();
             grass.add(tuft);
-            statistics.addOneGrass();
+            statistics.addGrass();
         }
     }
 
@@ -208,36 +212,26 @@ public class Simulation implements Runnable{
                 Animal animal = new Animal(position, parameters.getStartEnergy(), map, genes);
                 animals.add(animal);
                 map.place(animal);
-                statistics.addOneLiveAnimal();
+                statistics.addLiveAnimal();
             }
         }
     }
 
     public void trackedAnimal(Animal animalTracked){
         if(!run) {
+            removeStatusTracked();
             animalTracked.addStatusTracked();
             if (typeMap) app.changeStatusTrackedRight();
             else app.changeStatusTrackedLeft();
         }
     }
 
-    public void addStatusTracked(){ this.ifTrackedAnimal = true;}
-
     public void removeStatusTracked(){
         this.deathDay = 0;
-        this.childerenOfTrackedAnimal = 0;
+        this.childrenOfTrackedAnimal = 0;
         this.ifTrackedAnimal = false;
         for (Animal animal : animals) {
-            animal.removeStatusChild();
-            animal.removeStatusTracked();
+            animal.removeAnimalStatusTracked();
         }
     }
-
-    public int getChildrenOfTrackedAnimal(){return childerenOfTrackedAnimal;}
-
-    public boolean getIfTrackedAnimal(){ return ifTrackedAnimal;}
-
-    public boolean getRun(){return run;}
-
-    public int getDeathDay(){ return deathDay;}
 }

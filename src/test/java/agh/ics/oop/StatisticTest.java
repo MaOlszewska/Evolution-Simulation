@@ -47,14 +47,14 @@ public class StatisticTest {
         animal2.addChild();
         animal1.addChild();
         Statistics stats = new Statistics(10,10);
-        stats.counterAvgChildrenOfAliveAnimals(animals);
+        stats.calculateAvgChildrenOfAliveAnimals(animals);
         assertEquals(stats.getAvgChildren(),2);
     }
 
     @Test
     public void counterOfAvgEnergy(){
         Statistics stats = new Statistics(10,3);
-        stats.counterOfAvgEnergy(30);
+        stats.calculateOfAvgEnergy(30);
         assertEquals(stats.getAvgEnergy(),10);
     }
 }

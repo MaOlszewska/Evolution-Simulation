@@ -23,30 +23,22 @@ public class StartParameters {
         this.magicRight = magicRight;
 }
     public int getEnergyToMove() {return energyToMove;}
-
     public int getWidth() {
         return width;
     }
-
     public int getHeight() {
         return height;
     }
-
     public float getJungleRatio() {
         return jungleRatio;
     }
-
     public int getStartEnergy() {
         return startEnergy;
     }
-
     public int getEnergyGrass() {
         return energyGrass;
     }
-
     public int getNumberOfAnimals(){ return numberOfAnimals; }
-
     public boolean getMagicLeft(){ return magicLeft; }
-
     public boolean getMagicRight(){ return magicRight; }
 }

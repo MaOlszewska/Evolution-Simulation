@@ -25,7 +25,7 @@ public class AnimalTest {
         AnimalGenes genes = new AnimalGenes();
         Animal animal = new Animal(new Vector2d(1,1),10,map,genes);
         assertEquals(animal.getImage(), 4);
-        animal.substractEnergy(7);
+        animal.subtractEnergy(7);
         assertEquals(animal.getImage(),2);
     }
 
