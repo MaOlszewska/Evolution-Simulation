@@ -50,7 +50,7 @@ public class UpdateMap {
         Label numberOfGrass = new Label("Number of Grass: " + statistics.getNumberOfGrass());
         Label numberOfDeadAnimals = new Label("Number of Dead Animals: " + statistics.getNumberOfDeadAnimals());
         Label avgEnergy = new Label("Average of energy: " + statistics.getAvgEnergy());
-        Label avgLifeDaysDeadAnimal = new Label("Average of days: " + statistics.getAvgLifeDaysOfDeadAnimal());
+        Label avgLifeDaysDeadAnimal = new Label("Average of days: " + statistics.getAvgLifeLength());
         Label avgChildren = new Label("Average of Children: " + statistics.getAvgChildren());
         Label dominantGenotype = new Label("Dominant Genotype:  " + statistics.getDominantGenotype());
 

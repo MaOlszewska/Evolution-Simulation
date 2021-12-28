@@ -7,7 +7,7 @@ public class Statistics {
     private int numberOfGrass;
     private int numberOfDeadAnimals;
     private int worldDays;
-    private int avgLifeDaysOfDeadAnimal;
+    private int avgLifeLength;
     private int avgEnergy;
     private int sumOfDaysDeadAnimals;
     private int avgChildren;
@@ -19,7 +19,7 @@ public class Statistics {
         this.numberOfGrass = 0;
         this.numberOfDeadAnimals = 0;
         this.avgEnergy = startEnergy;
-        this.avgLifeDaysOfDeadAnimal = 0;
+        this.avgLifeLength = 0;
         this.sumOfDaysDeadAnimals = 0;
         this.avgChildren = 0;
         this.dominantGenotype = 0;
@@ -28,7 +28,7 @@ public class Statistics {
     public int getNumberOfGrass(){return this.numberOfGrass;}
     public int getNumberOfAliveAnimals(){return this.numberOfAliveAnimals;}
     public int getAvgEnergy(){return  this.avgEnergy;}
-    public int getAvgLifeDaysOfDeadAnimal(){return this.avgLifeDaysOfDeadAnimal;}
+    public int getAvgLifeLength(){return this.avgLifeLength;}
     public int getNumberOfDeadAnimals(){return this.numberOfDeadAnimals;}
     public int getAvgChildren(){return this.avgChildren;}
     public int getDominantGenotype(){return this.dominantGenotype;}
@@ -62,9 +62,9 @@ public class Statistics {
         }
     }
 
-    public void calculateAvgLifeDaysDeadAnimals(){
+    public void calculateAvgLifeLength(){
         if(numberOfDeadAnimals != 0) {
-            this.avgLifeDaysOfDeadAnimal =  this.sumOfDaysDeadAnimals / this.numberOfDeadAnimals;}
+            this.avgLifeLength =  this.sumOfDaysDeadAnimals / this.numberOfDeadAnimals;}
     }
 
     public void findDominantGenotype(ArrayList<Animal> animals){

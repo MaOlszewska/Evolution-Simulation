@@ -133,7 +133,7 @@ public class Simulation implements Runnable{
         }
         statistics.calculateAvgChildrenOfAliveAnimals(animals);
         statistics.addDaysDeadAnimal(sumDays);
-        statistics.calculateAvgLifeDaysDeadAnimals();
+        statistics.calculateAvgLifeLength();
     }
 
     private void movingAnimals(){

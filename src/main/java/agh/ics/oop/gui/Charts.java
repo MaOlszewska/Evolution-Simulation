@@ -35,4 +35,14 @@ public class Charts{
         leftMapSeries.getData().add(new XYChart.Data(leftStats.getWorldDays(), leftStats.getNumberOfGrass()));
         rightMapSeries.getData().add(new XYChart.Data(stats.getWorldDays(),stats.getNumberOfGrass()));
     }
+
+    public void updateAvgEnergy(Statistics stats, Statistics leftStats){
+        leftMapSeries.getData().add(new XYChart.Data(leftStats.getWorldDays(), leftStats.getAvgEnergy()));
+        rightMapSeries.getData().add(new XYChart.Data(stats.getWorldDays(),stats.getAvgEnergy()));
+    }
+
+    public void updateAvgLifeLength(Statistics stats, Statistics leftStats){
+        leftMapSeries.getData().add(new XYChart.Data(leftStats.getWorldDays(), leftStats.getAvgLifeLength()));
+        rightMapSeries.getData().add(new XYChart.Data(stats.getWorldDays(),stats.getAvgLifeLength()));
+    }
 }

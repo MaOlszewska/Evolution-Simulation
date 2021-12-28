@@ -25,7 +25,7 @@ public class StatisticFile {
         updatedAveragedValues(stats);
         bw = new BufferedWriter(new FileWriter(statisticMapFile, true));
         bw.write(stats.getWorldDays() + "," + stats.getNumberOfAliveAnimals()+ ","+
-                stats.getNumberOfGrass() + "," + stats.getAvgEnergy() + "," + stats.getAvgLifeDaysOfDeadAnimal()
+                stats.getNumberOfGrass() + "," + stats.getAvgEnergy() + "," + stats.getAvgLifeLength()
                 + "," + stats.getAvgChildren());
         bw.newLine();
         bw.flush();
@@ -36,7 +36,7 @@ public class StatisticFile {
         sumAnimals += stats.getNumberOfAliveAnimals();
         sumGrass += stats.getNumberOfGrass();
         sumAvgEnergy += stats.getAvgEnergy();
-        sumLengthLife += stats.getAvgLifeDaysOfDeadAnimal();
+        sumLengthLife += stats.getAvgLifeLength();
         sumAvgChildren += stats.getAvgChildren();
     }
 

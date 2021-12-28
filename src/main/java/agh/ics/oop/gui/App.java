@@ -38,6 +38,8 @@ public class App extends Application {
     private StatisticFile fileLeft;
     private final Charts animalChart = new Charts("Animals");
     private final Charts grassChart = new Charts("Grass");
+    private final Charts energyChart = new Charts("Average Energy");
+    private final Charts avgLifeLength = new Charts("Average life length");
 
     public void start(Stage primaryStage) throws Exception{
         primaryStage.getIcons().add(new Image(new FileInputStream("src/main/resources/block.png")));
@@ -70,8 +72,8 @@ public class App extends Application {
     @Override
     public void init() throws IOException {
         initBorder();
-        fileRight = new StatisticFile("src/main/resources/rightMapFile.txt");
-        fileLeft = new StatisticFile("src/main/resources/leftMapFile.txt");
+        fileRight = new StatisticFile("src/main/resources/rightMapFile.csv");
+        fileLeft = new StatisticFile("src/main/resources/leftMapFile.csv");
         VBox listOfTextField = new VBox();
         TextField widthField = new TextField("5");
         TextField heightField = new TextField("5");
@@ -253,7 +255,9 @@ public class App extends Application {
 
             grassChart.updateGrassChart(engineRight.getStatistics(), engineLeft.getStatistics());
             animalChart.updateAnimalsChart(engineRight.getStatistics(), engineLeft.getStatistics());
-            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart());
+            energyChart.updateAvgEnergy(engineRight.getStatistics(), engineLeft.getStatistics());
+            avgLifeLength.updateAvgLifeLength(engineRight.getStatistics(), engineLeft.getStatistics());
+            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart(), energyChart.getChart(), avgLifeLength.getChart());
             border.setCenter(charts);
 
             if(engineLeft.getIfTrackedAnimal()){
@@ -284,7 +288,9 @@ public class App extends Application {
 
             grassChart.updateGrassChart(engineRight.getStatistics(), engineLeft.getStatistics());
             animalChart.updateAnimalsChart(engineRight.getStatistics(), engineLeft.getStatistics());
-            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart());
+            energyChart.updateAvgEnergy(engineRight.getStatistics(), engineLeft.getStatistics());
+            avgLifeLength.updateAvgLifeLength(engineRight.getStatistics(), engineLeft.getStatistics());
+            VBox charts = new VBox(animalChart.getChart(), grassChart.getChart(), energyChart.getChart(), avgLifeLength.getChart());
             border.setCenter(charts);
 
             if(engineRight.getIfTrackedAnimal()){
