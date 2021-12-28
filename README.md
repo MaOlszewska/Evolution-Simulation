@@ -27,7 +27,7 @@ Good to know - The magic map will add five new animals if there are 5 living ani
 
 <img src="animals.png"/>
 
-- Elephant has 75-100% start energy
+- Elephant has more than 75% start energy
 - Giraffe has 50-75% start energy
 - Cat has 25-50% start energy
 - Mouse has 0-25% start energy
