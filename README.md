@@ -25,9 +25,9 @@ Good to know - The magic map will add five new animals if there are 5 animals le
 
 
 ## How to recognize animals?
-
+<p align="center">
 <img src="animals.png"/>
-
+</p>
 - Elephant has more than 75% start energy
 - Giraffe has 50-75% start energy
 - Cat has 25-50% start energy
